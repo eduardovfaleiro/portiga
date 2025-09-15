@@ -1,3 +1,5 @@
+from models.pais import Pais
+
 class Companhia:
     def __init__(self, nome: str, pais_sede: Pais, navios: list, capitaes: list):
         self.__nome = nome

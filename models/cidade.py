@@ -1,3 +1,5 @@
+from models.pais import Pais
+
 class Cidade:
     def __init__(self, nome: str, pais: Pais):
         self.__nome = nome
