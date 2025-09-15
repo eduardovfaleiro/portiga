@@ -38,5 +38,5 @@ class Porto:
         return self.__partidas
 
     @property
-    def chegas(self):
+    def chegadas(self):
         return self.__chegadas
