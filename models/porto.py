@@ -1,11 +1,13 @@
 from models.cidade import Cidade
 from models.administrador import Administrador
+from models.partida import Partida
+from models.chegada import Chegada
 
 class Porto:
-    def __init__(self, nome: str, cidade: Cidade, administrador: Administrador, partidas: list, chegadas: list):
+    def __init__(self, nome: str, cidade: Cidade, administrador: Administrador, partidas: list[Partida], chegadas: list[Chegada]):
         self.__nome = nome
         self.__cidade = cidade
-        self.__administrador = cidade
+        self.__administrador = administrador
         self.__partidas = partidas if partidas is not None else []
         self.__chegadas = chegadas if chegadas is not None else []
     
