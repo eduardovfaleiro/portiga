@@ -1,9 +1,9 @@
-from datetime import Date
+from datetime import date
 from models.navio import Navio
 from models.porto import Porto
 
 class Chegada:
-    def __init__(self, navio: Navio, data: Date, dias_viagem: int, procedencia: Porto):
+    def __init__(self, navio: Navio, data: date, dias_viagem: int, procedencia: Porto):
         self.__navio = navio
         self.__data = data
         self.__dias_viagem = dias_viagem
@@ -24,9 +24,9 @@ class Chegada:
         return self.__data
     
     @data.setter
-    def data(self, data: Date):
-        if not isinstance(data, Date):
-           raise TypeError("A data deve ser uma instância da classe Date.")
+    def data(self, data: date):
+        if not isinstance(data, date):
+           raise TypeError("A data deve ser uma instância de date.")
         self.__data = data
         
     @property

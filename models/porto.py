@@ -8,8 +8,8 @@ class Porto:
         self.__nome = nome
         self.__cidade = cidade
         self.__administrador = administrador
-        self.__partidas = partidas if partidas is not None else []
-        self.__chegadas = chegadas if chegadas is not None else []
+        self.__partidas = list(partidas) if partidas is not None else []
+        self.__chegadas = list(chegadas) if chegadas is not None else []
     
     @property
     def nome(self):
@@ -43,8 +43,8 @@ class Porto:
         
     @property
     def partidas(self):
-        return self.__partidas
+        return self.__partidas.copy()
 
     @property
     def chegadas(self):
-        return self.__chegadas
+        return self.__chegadas.copy()
