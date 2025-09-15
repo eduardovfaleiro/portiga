@@ -11,6 +11,8 @@ class Cidade:
     
     @nome.setter
     def nome(self, nome: str):
+        if not isinstance(nome, str):
+           raise TypeError("O nome da cidade deve ser uma string.")
         self.__nome = nome
         
     @property
@@ -19,5 +21,7 @@ class Cidade:
     
     @pais.setter
     def pais(self, pais: Pais):
+        if not isinstance(pais, Pais):
+           raise TypeError("O país deve ser uma instância da classe Pais.")
         self.__pais = pais
         

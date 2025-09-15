@@ -17,6 +17,8 @@ class Porto:
     
     @nome.setter
     def nome(self, nome: str):
+        if not isinstance(nome, str):
+           raise TypeError("O nome do porto deve ser uma string.")
         self.__nome = nome
         
     @property
@@ -25,6 +27,8 @@ class Porto:
     
     @cidade.setter
     def cidade(self, cidade: Cidade):
+        if not isinstance(cidade, Cidade):
+           raise TypeError("A cidade deve ser uma instância da classe Cidade.")
         self.__cidade = cidade
         
     @property
@@ -33,6 +37,8 @@ class Porto:
     
     @administrador.setter
     def administrador(self, administrador: Administrador):
+        if not isinstance(administrador, Administrador):
+           raise TypeError("O administrador deve ser uma instância da classe Administrador.")
         self.__administrador = administrador
         
     @property

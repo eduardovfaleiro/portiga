@@ -15,6 +15,8 @@ class Chegada:
     
     @navio.setter
     def navio(self, navio: Navio):
+        if not isinstance(navio, Navio):
+           raise TypeError("O navio deve ser uma instância da classe Navio.")
         self.__navio = navio
         
     @property
@@ -23,6 +25,8 @@ class Chegada:
     
     @data.setter
     def data(self, data: Date):
+        if not isinstance(data, Date):
+           raise TypeError("A data deve ser uma instância da classe Date.")
         self.__data = data
         
     @property
@@ -31,6 +35,8 @@ class Chegada:
     
     @dias_viagem.setter
     def dias_viagem(self, dias_viagem: int):
+        if not isinstance(dias_viagem, int):
+           raise TypeError("O número de dias de viagem deve ser um integer.")
         self.__dias_viagem = dias_viagem
         
     @property
@@ -39,4 +45,6 @@ class Chegada:
     
     @procedencia.setter
     def procedencia(self, procedencia: Porto):
+        if not isinstance(procedencia, Porto):
+           raise TypeError("A procedencia deve ser uma instância da classe Porto.")
         self.__procedencia = procedencia
