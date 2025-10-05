@@ -83,11 +83,14 @@ class TelaCompanhia(TelaUtils):
         print(f'Nome: {companhia.nome}')
         print(f'País sede: {companhia.pais_sede.codigo} {companhia.pais_sede.nome}\n')
 
-    def seleciona_companhia(self) -> int:
+    def seleciona_companhia(self) -> int | None:
         pattern = r'^\d+$'
 
         while True:
             user_input = input("Código da companhia que deseja selecionar (\"sair\" para cancelar): ")
+            if user_input == 'sair':
+                return None
+
             has_only_digits = re.match(pattern, user_input) != None
             if has_only_digits:
                 break
