@@ -10,11 +10,3 @@ class Pais:
     @property
     def codigo(self):
         return self.__codigo
-    
-    @nome.setter
-    def nome(self, nome: str):
-        if not isinstance(nome, str): # type: ignore
-            raise TypeError("O nome do país deve ser uma string.")
-        self.__nome = nome
-
-    
