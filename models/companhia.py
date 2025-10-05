@@ -40,19 +40,3 @@ class Companhia:
     @property
     def capitaes(self):
         return self.__capitaes.copy()# type: ignore
-    
-    def copyWith(
-        self,
-        id: Optional[int] = None,
-        nome: Optional[str] = None,
-        pais_sede: Optional[Pais] = None,
-        navios: Optional[list] = None, # type: ignore
-        capitaes: Optional[list] = None# type: ignore
-    ) -> 'Companhia':
-        return Companhia(
-            id=id if id is not None else self.__id,
-            nome=nome if nome is not None else self.__nome,
-            pais_sede=pais_sede if pais_sede is not None else self.__pais_sede,
-            navios=navios if navios is not None else self.__navios.copy(), # pyright: ignore[reportUnknownMemberType]
-            capitaes=capitaes if capitaes is not None else self.__capitaes.copy() # pyright: ignore[reportUnknownMemberType]
-        )
