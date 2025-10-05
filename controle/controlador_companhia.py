@@ -39,6 +39,7 @@ class ControladorCompanhia:
 
         while True:
             id = self.__tela_companhia.seleciona_companhia()
+            if id == None: return
 
             index = self.pega_index_companhia_por_id(id)
             if index is None:
@@ -49,8 +50,12 @@ class ControladorCompanhia:
         novos_dados = self.__tela_companhia.pega_dados_opcionais_companhia()
         
         companhia_atual = self.__companhias[index]
-        companhia_atual.nome = novos_dados['nome']
-        companhia_atual.pais_sede = novos_dados['pais_sede']
+
+        if novos_dados['nome'] != None and novos_dados['nome'].strip != '':
+            companhia_atual.nome = novos_dados['nome']
+
+        if novos_dados['pais_sede'] != None:
+            companhia_atual.pais_sede = novos_dados['pais_sede']
 
         self.__tela_companhia.mostra_mensagem(f'Companhia {companhia_atual.id} alterada com sucesso!')
 
@@ -60,9 +65,10 @@ class ControladorCompanhia:
         tem_companhias = self.lista()
         if not tem_companhias: return
 
-        id = self.__tela_companhia.seleciona_companhia()
-        
         while True:
+            id = self.__tela_companhia.seleciona_companhia()
+            if id == None: return
+
             for i in range(len(self.__companhias)):
                 companhia = self.__companhias[i]
                 if companhia.id == id:
@@ -71,7 +77,7 @@ class ControladorCompanhia:
                     self.lista()
                     return
                     
-            self.__tela_companhia.mostra_mensagem('ERRO: Companhia não existe')
+            self.__tela_companhia.mostra_erro('Companhia não existe')
 
     def lista(self) -> bool:
         print('\nListando companhias...')
