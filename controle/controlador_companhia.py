@@ -49,7 +49,9 @@ class ControladorCompanhia:
         novos_dados = self.__tela_companhia.pega_dados_opcionais_companhia()
         
         companhia_atual = self.__companhias[index]
-        self.__companhias[index] = companhia_atual.copyWith(nome=novos_dados['nome'], pais_sede=novos_dados['pais_sede'])
+        companhia_atual.nome = novos_dados['nome']
+        companhia_atual.pais_sede = novos_dados['pais_sede']
+
         self.__tela_companhia.mostra_mensagem(f'Companhia {companhia_atual.id} alterada com sucesso!')
 
     def exclui(self):
