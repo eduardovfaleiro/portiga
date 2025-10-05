@@ -34,17 +34,17 @@ class ControladorCompanhia:
     def altera(self):
         self.__tela_companhia.mostra_titulo('Alterar Companhia')
         
-        existem_companhias = self.lista()
-        if not existem_companhias:
-            self.__tela_companhia.mostra_erro('Nenhuma companhia encontrada')
-            return
+        tem_companhias = self.lista()
+        if not tem_companhias: return
 
-        id = self.__tela_companhia.seleciona_companhia()
+        while True:
+            id = self.__tela_companhia.seleciona_companhia()
 
-        index = self.pega_index_companhia_por_id(id)
-        if index is None:
-            self.__tela_companhia.mostra_mensagem('ERRO: Companhia não existente')
-            return
+            index = self.pega_index_companhia_por_id(id)
+            if index is None:
+                self.__tela_companhia.mostra_mensagem('ERRO: Companhia não existe')
+            else:
+                break
         
         novos_dados = self.__tela_companhia.pega_dados_opcionais_companhia()
         
@@ -53,19 +53,26 @@ class ControladorCompanhia:
         self.__tela_companhia.mostra_mensagem(f'Companhia {companhia_atual.id} alterada com sucesso!')
 
     def exclui(self):
-        self.lista()
+        self.__tela_companhia.mostra_titulo('Excluir Companhia')
+
+        tem_companhias = self.lista()
+        if not tem_companhias: return
+
         id = self.__tela_companhia.seleciona_companhia()
         
-        for i in range(len(self.__companhias)):
-            if self.__companhias[i].id == id:
-                self.__companhias.pop(i)
-                self.lista()
-                return
-                
-        self.__tela_companhia.mostra_mensagem('ERRO: Companhia não existente')
+        while True:
+            for i in range(len(self.__companhias)):
+                companhia = self.__companhias[i]
+                if companhia.id == id:
+                    self.__companhias.pop(i)
+                    self.__tela_companhia.mostra_mensagem(f'Companhia {companhia.id} excluída com sucesso!')
+                    self.lista()
+                    return
+                    
+            self.__tela_companhia.mostra_mensagem('ERRO: Companhia não existe')
 
     def lista(self) -> bool:
-        print('Listando companhias...')
+        print('\nListando companhias...')
 
         if len(self.__companhias) == 0:
             print('Nenhuma companhia encontrada')

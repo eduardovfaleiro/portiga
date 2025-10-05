@@ -3,6 +3,7 @@ from typing import Any
 from models.companhia import Companhia
 from models.pais import Pais
 from telas.tela_utils import TelaUtils
+import re
 
 
 class TelaCompanhia(TelaUtils):
@@ -20,8 +21,10 @@ class TelaCompanhia(TelaUtils):
             nome = input("Nome: ")
             if nome.strip() == '':
                 self.mostra_erro('Nome da companhia não pode ser vazio')
-                continue
-
+            else:
+                break
+                
+        while True:
             codigo_pais_sede = input("País sede (código ISO 3166): ")
             pais = self.retorna_pais(codigo_pais_sede)
 
@@ -33,7 +36,7 @@ class TelaCompanhia(TelaUtils):
         return {"nome": nome, "pais_sede": pais}
     
     def pega_dados_opcionais_companhia(self) -> dict[str, Any]:
-        self.mostra_titulo('Dados Companhia')
+        self.mostra_titulo('Novos Dados Companhia')
         nome = input("Nome: ")
 
         if nome.strip() == '':
@@ -76,7 +79,17 @@ class TelaCompanhia(TelaUtils):
         print(f'País sede: {companhia.pais_sede.codigo} {companhia.pais_sede.nome}\n')
 
     def seleciona_companhia(self) -> int:
-        id = int(input("Código da companhia que deseja selecionar: "))
+        pattern = r'^\d+$'
+
+        while True:
+            user_input = input("Código da companhia que deseja selecionar (\"sair\" para cancelar): ")
+            has_only_digits = re.match(pattern, user_input) != None
+            if has_only_digits:
+                break
+            else:
+                self.mostra_erro('Código da companhia só pode ser composto por dígitos')
+
+        id = int(user_input)
         return id
     
     def mostra_mensagem(self, mensagem: str):
