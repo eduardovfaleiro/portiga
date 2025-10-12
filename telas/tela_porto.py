@@ -1,0 +1,42 @@
+from typing import Any
+from telas.seletor_pais import SeletorPais
+from telas.tela_utils import TelaUtils
+
+
+class TelaPorto(TelaUtils, SeletorPais):
+    __opcoes = {1: 'Incluir', 2: 'Excluir', 3: 'Alterar', 4: 'Listar', 0: 'Retornar'}
+
+    def pega_dados(self) -> dict[str, Any]:
+        self.mostra_titulo('Dados Porto')
+        
+        while True:
+            nome = input("Nome: ")
+            if self.valor_eh_vazio(nome):
+                self.mostra_erro('Nome do porto não pode ser vazio')
+            else:
+                break
+
+        while True:
+            cidade = input("Cidade: ")
+            if self.valor_eh_vazio(cidade):
+                self.mostra_erro('Nome da cidade não pode ser vazio')
+            else:
+                break
+
+        while True:
+            codigo_pais = input("País (código ISO 3166): ")
+            pais = self.retorna_pais(codigo_pais)
+
+            if pais is not None:
+                break
+
+            self.mostra_erro('Código de país no padrão ISO 3166 não existe')
+                
+        print('LISTA ADMINISTRADOR E PEDE PELO CÓDIGO')
+
+        return {'nome': nome, 'cidade': cidade, 'pais': pais}
+    
+    def abre_opcoes(self):
+        self.mostra_titulo('Portos')
+        self.mostra_opcoes(self.__opcoes)
+        return self.recebe_opcao(self.__opcoes)
