@@ -36,6 +36,35 @@ class TelaPorto(TelaUtils, SeletorPais):
 
         return {'nome': nome, 'cidade': cidade, 'pais': pais}
     
+
+    def pega_dados_opcionais(self) -> dict[str, Any]:
+        self.mostra_titulo('Novos Dados Porto')
+
+        nome = input("Nome: ")
+        if self.valor_eh_vazio(nome):
+            nome = None
+
+        cidade = input("Cidade: ")
+        if self.valor_eh_vazio(cidade):
+            cidade = None
+
+        while True:
+            codigo_pais_sede = input("País (código ISO 3166): ")
+            if self.valor_eh_vazio(codigo_pais_sede):
+                pais = None
+                break
+
+            pais = self.retorna_pais(codigo_pais_sede)
+
+            if pais is not None:
+                break
+
+            self.mostra_erro('Código de país no padrão ISO 3166 não existe')
+
+        print('LISTA ADMINISTRADOR E PEDE PELO CÓDIGO')
+
+        return {"nome": nome, "cidade": cidade, "pais": pais, "administrador": None}
+
     def abre_opcoes(self):
         self.mostra_titulo('Portos')
         self.mostra_opcoes(self.__opcoes)

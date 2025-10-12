@@ -10,3 +10,6 @@ class Pais:
     @property
     def codigo(self):
         return self.__codigo
+    
+    def __str__(self):
+        return f'{self.codigo} {self.nome}'

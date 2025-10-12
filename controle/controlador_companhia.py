@@ -4,7 +4,7 @@ from models.companhia import Companhia
 from telas.tela_companhia import TelaCompanhia
 
 class ControladorCompanhia(GeradorId):
-    def __init__(self, controlador_sistema): # type: ignore
+    def __init__(self, controlador_sistema: Any): # type: ignore
         self.__companhias: list[Companhia] = []
         self.__controlador_sistema = controlador_sistema
         self.__tela_companhia = TelaCompanhia()
@@ -18,10 +18,10 @@ class ControladorCompanhia(GeradorId):
         self.__companhias.append(companhia)
         self.__tela_companhia.mostra_mensagem('Companhia adicionada com sucesso!')
 
-    def pega_index_companhia_por_id(self, id: int):
+    def pega_companhia_por_id(self, id: int) -> Companhia | None:
         for i in range(len(self.__companhias)):
             if self.__companhias[i].id == id:
-                return i
+                return self.__companhias[i]
             
         return None
 
@@ -32,19 +32,17 @@ class ControladorCompanhia(GeradorId):
         if not tem_companhias: return
 
         while True:
-            id = self.__tela_companhia.seleciona_companhia()
+            id = self.__tela_companhia.seleciona_id()
             if id == None: return
 
-            index = self.pega_index_companhia_por_id(id)
-            if index is None:
-                self.__tela_companhia.mostra_mensagem('ERRO: Companhia não existe')
+            companhia_atual = self.pega_companhia_por_id(id)
+            if companhia_atual is None:
+                self.__tela_companhia.mostra_erro('Companhia não existe')
             else:
                 break
         
         novos_dados = self.__tela_companhia.pega_dados_opcionais_companhia()
         
-        companhia_atual = self.__companhias[index]
-
         if novos_dados['nome'] != None and novos_dados['nome'].strip != '':
             companhia_atual.nome = novos_dados['nome']
 
@@ -60,7 +58,7 @@ class ControladorCompanhia(GeradorId):
         if not tem_companhias: return
 
         while True:
-            id = self.__tela_companhia.seleciona_companhia()
+            id = self.__tela_companhia.seleciona_id()
             if id == None: return
 
             for i in range(len(self.__companhias)):
@@ -81,7 +79,7 @@ class ControladorCompanhia(GeradorId):
             return False
         
         for companhia in self.__companhias:
-            self.__tela_companhia.mostra_companhia(companhia)
+            self.__tela_companhia.mostra_mensagem(f'{companhia.__str__()}')
         
         return True
 

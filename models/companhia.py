@@ -40,3 +40,10 @@ class Companhia:
     @property
     def capitaes(self):
         return self.__capitaes.copy()# type: ignore
+    
+    def __str__(self):
+        return (
+            f'Código: {self.id}\n'
+            f'Nome: {self.nome}\n'
+            f'País sede: {self.pais_sede}'
+        )

@@ -25,3 +25,5 @@ class Cidade:
            raise TypeError("O país deve ser uma instância da classe Pais.")
         self.__pais = pais
         
+    def __str__(self):
+        return f'{self.nome} {self.pais.codigo}'
