@@ -1,15 +1,12 @@
 from models.cidade import Cidade
 from models.administrador import Administrador
-from models.partida import Partida
-from models.chegada import Chegada
 
 class Porto:
-    def __init__(self, nome: str, cidade: Cidade, administrador: Administrador, partidas: list[Partida], chegadas: list[Chegada]):
+    def __init__(self, id: int, nome: str, cidade: Cidade, administrador: Administrador):
+        self.__id = id
         self.__nome = nome
         self.__cidade = cidade
         self.__administrador = administrador
-        self.__partidas = list(partidas) if partidas is not None else []
-        self.__chegadas = list(chegadas) if chegadas is not None else []
     
     @property
     def nome(self):
@@ -40,11 +37,3 @@ class Porto:
         if not isinstance(administrador, Administrador):
            raise TypeError("O administrador deve ser uma instância da classe Administrador.")
         self.__administrador = administrador
-        
-    @property
-    def partidas(self):
-        return self.__partidas.copy()
-
-    @property
-    def chegadas(self):
-        return self.__chegadas.copy()
