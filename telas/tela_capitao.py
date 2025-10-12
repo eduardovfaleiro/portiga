@@ -1,5 +1,6 @@
 import re
 from typing import Any
+from models.capitao import Capitao
 from telas.tela_utils import TelaUtils
 
 class TelaCapitao(TelaUtils):
@@ -20,10 +21,9 @@ class TelaCapitao(TelaUtils):
                 break
         return {'nome': nome}
 
-    def mostra_capitao(self, capitao: Any, indice: int | None = None):
-        prefix = f'[{indice}] ' if indice is not None else ''
-        nome = getattr(capitao, 'nome', str(capitao))
-        print(f'{prefix}Nome: {nome}')
+    def mostra_capitao(self, capitao: Capitao):
+        print(f'Código: {capitao.id}')
+        print(f'Nome: {capitao.nome}\n')
 
     def seleciona_capitao(self) -> int | None:
         pattern = r'^\d+$'

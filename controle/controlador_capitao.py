@@ -1,70 +1,57 @@
 from operator import attrgetter
 from typing import Any
+from controle.gerador_id import GeradorId
 from models.capitao import Capitao
 from telas.tela_capitao import TelaCapitao
 
-class ControladorCapitao:
+class ControladorCapitao(GeradorId):
     def __init__(self, controlador_sistema):  # type: ignore
         self.__capitaes: list[Capitao] = []
         self.__controlador_sistema = controlador_sistema
-        self.__tela = TelaCapitao()
+        self.__tela_capitao = TelaCapitao()
 
-    def gera_id(self) -> int:
-        if len(self.__capitaes) == 0:
-            return 0
-        ultimo_id = max(self.__capitaes, key=attrgetter('id')).id if hasattr(self.__capitaes[0], 'id') else len(self.__capitaes) - 1
-        return ultimo_id + 1
-    
-    def pega_capitao_por_id(self, id: int):
-        """Retorna instância de Capitao pelo atributo id, ou None."""
-        for capitao in self.__capitaes:
-            if hasattr(capitao, 'id') and getattr(capitao, 'id') == id:
-                return capitao
-        return None
+        super().__init__(self.__capitaes)
 
     def inclui(self):
-        dados = self.__tela.pega_dados_capitao()
+        dados = self.__tela_capitao.pega_dados_capitao()
         if not dados:
             return
 
-        nome = dados.get('nome')
-        if not nome or str(nome).strip() == '':
-            self.__tela.mostra_erro('Nome inválido')
-            return
-
-        # Ajuste abaixo se Capitao aceita (id, nome) ou apenas nome.
-        try:
-            # tenta criar com id + nome (se seu modelo usar id)
-            capitao = Capitao(self.gera_id(), nome)  # ajustar se necessário
-        except TypeError:
-            # fallback: tentar apenas nome
-            capitao = Capitao(nome)
-
+        capitao = Capitao(self.gera_id(), dados['nome'])
         self.__capitaes.append(capitao)
-        self.__tela.mostra_mensagem('Capitão adicionado com sucesso!')
+        self.__tela_capitao.mostra_mensagem('Capitão adicionado com sucesso!')
+
+    def pega_index_capitao_por_id(self, id: int):
+        for i in range(len(self.__capitaes)):
+            if self.__capitaes[i].id == id:
+                return i
+            
+        return None
+
+    def pega_capitao_por_id(self, id: int):
+        idx = self.pega_index_capitao_por_id(id)
+        if idx is None:
+            return None
+        return self.__capitaes[idx]
 
     def exclui(self):
-        self.__tela.mostra_titulo('Excluir Capitão')
+        self.__tela_capitao.mostra_titulo('Excluir Capitão')
 
         if not self.lista():
             return
 
-        while True:
-            selecionado = self.__tela.seleciona_capitao()
-            if selecionado is None:
-                return
+        selecionado = self.__tela_capitao.seleciona_capitao()  # espera ID
+        if selecionado is None:
+            return
 
-            if not isinstance(selecionado, int):
-                self.__tela.mostra_erro('Seleção inválida. Informe o índice mostrado na lista.')
-                continue
+        index = self.pega_index_capitao_por_id(selecionado)
+        if index is None:
+            self.__tela_capitao.mostra_erro('Capitão não encontrado')
+            return
 
-            if 0 <= selecionado < len(self.__capitaes):
-                capitao = self.__capitaes.pop(selecionado)
-                self.__tela.mostra_mensagem(f'Capitão removido com sucesso: {getattr(capitao, "nome", str(capitao))}')
-                self.lista()
-                return
-
-            self.__tela.mostra_erro('Capitão não existe para o índice informado.')
+        capitao = self.__capitaes.pop(index)
+        self.__tela_capitao.mostra_mensagem(f'Capitão {capitao.nome} (ID: {capitao.id}) removido com sucesso!')
+        self.lista()
 
     def lista(self) -> bool:
         print('\nListando capitães...')
@@ -73,13 +60,8 @@ class ControladorCapitao:
             print('Nenhum capitão encontrado')
             return False
 
-        for i, capitao in enumerate(self.__capitaes):
-            print(f'[{i}]', end=' ')
-            try:
-                self.__tela.mostra_capitao(capitao, i)
-            except TypeError:
-                # se tela espera só o objeto
-                self.__tela.mostra_capitao(capitao)
+        for capitao in self.__capitaes:
+            self.__tela_capitao.mostra_capitao(capitao)
 
         return True
 
@@ -90,5 +72,5 @@ class ControladorCapitao:
         opcoes: dict[int, Any] = {1: self.inclui, 2: self.exclui, 3: self.lista, 0: self.retorna}
         continua = True
         while continua:
-            escolha = self.__tela.abre_opcoes()
+            escolha = self.__tela_capitao.abre_opcoes()
             opcoes[escolha]()
