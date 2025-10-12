@@ -59,19 +59,11 @@ class TelaNavio(TelaUtils):
                 break
             self.mostra_erro('Código do capitão só pode ser composto por dígitos')
 
-        # Cargas: entradaspor vírgula
-        cargas_raw = input("Cargas (separadas por vírgula; deixe em branco para nenhuma): ").strip()
-        if cargas_raw == '':
-            cargas = []
-        else:
-            cargas = [c.strip() for c in cargas_raw.split(',') if c.strip() != '']
-
         return {
             "nome": nome,
             "bandeira": bandeira,
             "companhia": companhia_id,
             "capitao": capitao_id,
-            "cargas": cargas
         }
 
     def pega_dados_opcionais_navio(self) -> dict[str, Any]:
@@ -114,19 +106,11 @@ class TelaNavio(TelaUtils):
                 break
             self.mostra_erro('Código do capitão só pode ser composto por dígitos')
 
-        # Cargas opcionais
-        cargas_raw = input("Cargas (separadas por vírgula): ").strip()
-        if cargas_raw == '':
-            cargas = None
-        else:
-            cargas = [c.strip() for c in cargas_raw.split(',') if c.strip() != '']
-
         return {
             "nome": nome,
             "bandeira": bandeira,
             "companhia": companhia,
             "capitao": capitao,
-            "cargas": cargas
         }
 
     def retorna_bandeira(self, codigo_bandeira: str) -> Pais | None:
@@ -145,14 +129,12 @@ class TelaNavio(TelaUtils):
             bandeira = navio.get('bandeira')
             companhia = navio.get('companhia')
             capitao = navio.get('capitao')
-            cargas = navio.get('cargas', [])
         else:
             id_ = getattr(navio, 'id', '')
             nome = getattr(navio, 'nome', '')
             bandeira = getattr(navio, 'bandeira', None)
             companhia = getattr(navio, 'companhia', None)
             capitao = getattr(navio, 'capitao', None)
-            cargas = getattr(navio, 'cargas', [])
 
         bandeira_txt = f'{bandeira.codigo} {bandeira.nome}' if bandeira else 'N/A'
         companhia_txt = getattr(companhia, 'id', companhia) if companhia is not None else 'N/A'
@@ -163,7 +145,6 @@ class TelaNavio(TelaUtils):
         print(f'Bandeira: {bandeira_txt}')
         print(f'Companhia: {companhia_txt}')
         print(f'Capitão: {capitao_txt}')
-        print(f'Cargas: {", ".join(cargas) if cargas else "Nenhuma"}\n')
 
     def seleciona_navio(self) -> int | None:
         pattern = r'^\d+$'

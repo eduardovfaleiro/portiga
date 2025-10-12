@@ -1,7 +1,6 @@
 from operator import attrgetter
 from typing import Any
 from models.navio import Navio
-from models.carga import Carga
 from telas.tela_navio import TelaNavio
 
 class ControladorNavio:
@@ -37,25 +36,8 @@ class ControladorNavio:
             if ctrl_cap is not None and hasattr(ctrl_cap, 'pega_capitao_por_id'):
                 capitao = ctrl_cap.pega_capitao_por_id(dados['capitao'])
 
-        # converte lista de strings -> instâncias de Carga
-        cargas_input = dados.get('cargas', []) or []
-        cargas_inst: list[Carga] = []
-        for desc in cargas_input:
-            if not isinstance(desc, str):
-                continue
-            texto = desc.strip()
-            if texto == '':
-                continue
-            try:
-                cargas_inst.append(Carga(texto))
-            except TypeError:
-                try:
-                    cargas_inst.append(Carga(descricao=texto))
-                except TypeError:
-                    raise
-
         novo_id = self.gera_id()
-        navio = Navio(novo_id, dados['nome'], dados['bandeira'], companhia, capitao, cargas_inst)
+        navio = Navio(novo_id, dados['nome'], dados['bandeira'], companhia, capitao)
         self.__navios.append(navio)
         self.__tela_navio.mostra_mensagem('Navio adicionado com sucesso!')
 
@@ -112,16 +94,6 @@ class ControladorNavio:
             ctrl_cap = getattr(self.__controlador_sistema, 'controlador_capitao', None)
             if isinstance(novos_dados['capitao'], int) and ctrl_cap is not None and hasattr(ctrl_cap, 'pega_capitao_por_id'):
                 navio_atual.capitao = ctrl_cap.pega_capitao_por_id(novos_dados['capitao'])
-
-        # cargas (lista de strings -> lista de Carga)
-        if novos_dados.get('cargas') is not None:
-            entradas = novos_dados['cargas']
-            if isinstance(entradas, list):
-                cargas_limpa = [c.strip() for c in entradas if isinstance(c, str) and c.strip() != '']
-                navio_atual.cargas = [Carga(descricao=c) for c in cargas_limpa]
-            else:
-                if isinstance(entradas, str) and entradas.strip() != '':
-                    navio_atual.cargas = [Carga(descricao=entradas.strip())]
 
         self.__tela_navio.mostra_mensagem(f'Navio {navio_atual.id} alterado com sucesso!')
 
