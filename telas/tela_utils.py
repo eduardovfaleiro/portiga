@@ -1,4 +1,7 @@
 
+import re
+
+
 class TelaUtils:
     def mostra_erro(self, mensagem: str):
         print(f'ERRO: {mensagem}')
@@ -37,3 +40,20 @@ class TelaUtils:
     
     def mostra_mensagem(self, mensagem: str):
         print(mensagem)
+
+    def seleciona_id(self) -> int | None:
+        pattern = r'^\d+$'
+
+        while True:
+            user_input = input("Código que deseja selecionar (\"sair\" para cancelar): ")
+            if user_input == 'sair':
+                return None
+
+            has_only_digits = re.match(pattern, user_input) != None
+            if has_only_digits:
+                break
+            else:
+                self.mostra_erro('Código só pode ser composto por dígitos')
+
+        id = int(user_input)
+        return id
