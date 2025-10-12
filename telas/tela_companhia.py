@@ -3,8 +3,6 @@ from typing import Any
 from models.companhia import Companhia
 from telas.seletor_pais import SeletorPais
 from telas.tela_utils import TelaUtils
-import re
-
 
 class TelaCompanhia(TelaUtils, SeletorPais):
     __opcoes = {1: 'Incluir', 2: 'Excluir', 3: 'Alterar', 4: 'Listar', 0: 'Retornar'}
@@ -56,25 +54,3 @@ class TelaCompanhia(TelaUtils, SeletorPais):
             self.mostra_erro('Código de país no padrão ISO 3166 não existe')
 
         return {"nome": nome, "pais_sede": pais}
-
-    def mostra_companhia(self, companhia: Companhia):
-        print(f'Código: {companhia.id}')
-        print(f'Nome: {companhia.nome}')
-        print(f'País sede: {companhia.pais_sede.codigo} {companhia.pais_sede.nome}\n')
-
-    def seleciona_companhia(self) -> int | None:
-        pattern = r'^\d+$'
-
-        while True:
-            user_input = input("Código da companhia que deseja selecionar (\"sair\" para cancelar): ")
-            if user_input == 'sair':
-                return None
-
-            has_only_digits = re.match(pattern, user_input) != None
-            if has_only_digits:
-                break
-            else:
-                self.mostra_erro('Código da companhia só pode ser composto por dígitos')
-
-        id = int(user_input)
-        return id
