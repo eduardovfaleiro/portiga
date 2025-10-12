@@ -1,8 +1,10 @@
 
 import re
 
+from utils import Utils
 
-class TelaUtils:
+
+class TelaUtils(Utils):
     def mostra_erro(self, mensagem: str):
         print(f'ERRO: {mensagem}')
 
@@ -34,9 +36,6 @@ class TelaUtils:
                 return int(opcao)
             else:
                 self.mostra_erro(erro_mensagem)
-
-    def valor_eh_vazio(self, valor: str):
-        return valor.strip() == ''
     
     def mostra_mensagem(self, mensagem: str):
         print(mensagem)
