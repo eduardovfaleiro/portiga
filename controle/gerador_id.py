@@ -1,5 +1,9 @@
+from operator import attrgetter
+from typing import Any
+
+
 class GeradorId:
-    def __init__(self, lista_com_id):
+    def __init__(self, lista_com_id: list[Any]):
         self.__lista = lista_com_id
 
     def gera_id(self) -> int:
