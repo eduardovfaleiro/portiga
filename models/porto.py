@@ -9,6 +9,10 @@ class Porto:
         self.__administrador = administrador
     
     @property
+    def id(self):
+        return self.__id
+
+    @property
     def nome(self):
         return self.__nome
     
@@ -37,3 +41,12 @@ class Porto:
         if not isinstance(administrador, Administrador):
            raise TypeError("O administrador deve ser uma instância da classe Administrador.")
         self.__administrador = administrador
+
+    def __str__(self):
+        return (
+            f'Código: {self.id}\n'
+            f'Nome: {self.nome}\n'
+            f'Cidade: {self.cidade}\n'
+            f'Administrador: {self.administrador}'
+        )
+        
