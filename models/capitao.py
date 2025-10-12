@@ -1,17 +1,15 @@
 from models.pessoa import Pessoa
-from models.companhia import Companhia
 
 class Capitao(Pessoa):
-    def __init__(self, nome: str, companhia: Companhia):
-        super().__init__(nome)
-        self.__companhia = companhia
+    def __init__(self, id: int, nome: str):
+        super().__init__(id, nome)
+        self.__id = id
+        self.__nome = nome
 
     @property
-    def companhia(self):
-        return self.__companhia
-    
-    @companhia.setter
-    def companhia(self, companhia: Companhia):
-        if not isinstance(companhia, Companhia):
-            raise TypeError("A companhia deve ser uma instância da classe Companhia.")
-        self.__companhia = companhia
+    def id(self):
+        return self.__id
+
+    @property
+    def nome(self):
+        return self.__nome
