@@ -1,21 +1,15 @@
-from operator import attrgetter
 from typing import Any
+from controle.gerador_id import GeradorId
 from models.companhia import Companhia
 from telas.tela_companhia import TelaCompanhia
 
-class ControladorCompanhia:
+class ControladorCompanhia(GeradorId):
     def __init__(self, controlador_sistema): # type: ignore
         self.__companhias: list[Companhia] = []
         self.__controlador_sistema = controlador_sistema
         self.__tela_companhia = TelaCompanhia()
 
-    def gera_id(self) -> int:
-        if len(self.__companhias) == 0:
-            return 0
-
-        ultimo_id = max(self.__companhias, key=attrgetter('id')).id
-        novo_id = ultimo_id + 1
-        return novo_id
+        super().__init__(self.__companhias)
 
     def inclui(self):
         dados = self.__tela_companhia.pega_dados_companhia()
