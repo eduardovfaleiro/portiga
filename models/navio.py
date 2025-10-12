@@ -4,12 +4,17 @@ from models.capitao import Capitao
 from models.carga import Carga
 
 class Navio:
-    def __init__(self, nome: str, bandeira: Pais, companhia: Companhia, capitao: Capitao, cargas: list[Carga]):
+    def __init__(self, id: int, nome: str, bandeira: Pais, companhia: Companhia, capitao: Capitao, cargas: list[Carga]):
+        self.__id = id
         self.__nome = nome
         self.__bandeira = bandeira
         self.__companhia = companhia
         self.__capitao = capitao
         self.__cargas = cargas
+    
+    @property
+    def id(self):
+        return self.__id   
 
     @property
     def nome(self):
