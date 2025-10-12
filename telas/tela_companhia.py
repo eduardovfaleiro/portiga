@@ -1,26 +1,13 @@
-import json
-import os
+
 from typing import Any
 from models.companhia import Companhia
-from models.pais import Pais
+from telas.seletor_pais import SeletorPais
 from telas.tela_utils import TelaUtils
 import re
 
 
-class TelaCompanhia(TelaUtils):
+class TelaCompanhia(TelaUtils, SeletorPais):
     __opcoes = {1: 'Incluir', 2: 'Excluir', 3: 'Alterar', 4: 'Listar', 0: 'Retornar'}
-    __paises: dict[str, str] = {}
-        
-    PAISES_FILE_PATH = os.path.join(os.path.dirname(__file__), 'countries.json')
-    
-    try:
-        with open('countries.json', 'r', encoding='utf-8') as f:
-            paises_dict = json.load(f)
-            __paises = {item.get('code'): item.get('name') for item in paises_dict}
-    except FileNotFoundError:
-        print("ERRO: O arquivo countries.json não foi encontrado. A lista de países está vazia.")
-    except json.JSONDecodeError:
-        print("ERRO: Falha ao decodificar o JSON do arquivo countries.json.")
 
     def abre_opcoes(self):
         self.mostra_titulo('Companhias')
@@ -32,7 +19,7 @@ class TelaCompanhia(TelaUtils):
         
         while True:
             nome = input("Nome: ")
-            if nome.strip() == '':
+            if self.valor_eh_vazio(nome):
                 self.mostra_erro('Nome da companhia não pode ser vazio')
             else:
                 break
@@ -52,12 +39,12 @@ class TelaCompanhia(TelaUtils):
         self.mostra_titulo('Novos Dados Companhia')
         nome = input("Nome: ")
 
-        if nome.strip() == '':
+        if self.valor_eh_vazio(nome):
             nome = None
 
         while True:
             codigo_pais_sede = input("País sede (código ISO 3166): ")
-            if codigo_pais_sede.strip() == '':
+            if self.valor_eh_vazio(codigo_pais_sede):
                 pais = None
                 break
 
@@ -69,14 +56,6 @@ class TelaCompanhia(TelaUtils):
             self.mostra_erro('Código de país no padrão ISO 3166 não existe')
 
         return {"nome": nome, "pais_sede": pais}
-    
-    def retorna_pais(self, codigo_pais: str) -> Pais | None:
-        pais_nome = self.__paises.get(codigo_pais)
-
-        if pais_nome is not None:
-            return Pais(codigo=codigo_pais, nome=pais_nome)
-        else:
-            return None
 
     def mostra_companhia(self, companhia: Companhia):
         print(f'Código: {companhia.id}')
@@ -99,6 +78,3 @@ class TelaCompanhia(TelaUtils):
 
         id = int(user_input)
         return id
-    
-    def mostra_mensagem(self, mensagem: str):
-        print(mensagem)
