@@ -168,8 +168,8 @@ class TelaNavio(TelaUtils, SeletorPais):
             cargas = getattr(navio, 'cargas', [])
 
         bandeira_txt = f'{bandeira.codigo} {bandeira.nome}' if bandeira else 'N/A'
-        companhia_txt = getattr(companhia, 'id', companhia) if companhia is not None else 'N/A'
-        capitao_txt = getattr(capitao, 'id', capitao) if capitao is not None else 'N/A'
+        companhia_txt = f'{companhia.id} {companhia.nome}' if companhia else 'N/A'
+        capitao_txt = f'{capitao.id} {capitao.nome}' if capitao else 'N/A'
 
         print(f'Código: {id_}')
         print(f'Nome: {nome}')
@@ -185,7 +185,8 @@ class TelaNavio(TelaUtils, SeletorPais):
                     cid = getattr(c, 'id', None) or getattr(c, 'codigo', None) or str(c)
                     ctipo = getattr(c, 'tipo', '') or ''
                     cpeso = getattr(c, 'peso', '') or ''
-                    cargas_txt.append(f'{cid} ({ctipo}, {cpeso}kg)')
+                    cvalor = getattr(c, 'valor', '') or ''
+                    cargas_txt.append(f'{cid}: {ctipo}, {cpeso} kg, R${cvalor}')
                 print('Cargas:', '; '.join(cargas_txt))
             else:
                 print('Cargas: N/A')
