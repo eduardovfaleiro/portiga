@@ -3,24 +3,13 @@ import os
 import re
 from typing import Any
 from models.pais import Pais
+from telas.seletor_pais import SeletorPais
 from telas.tela_utils import TelaUtils
 
 
-class TelaNavio(TelaUtils):
+class TelaNavio(TelaUtils, SeletorPais):
     __opcoes = {1: 'Incluir', 2: 'Excluir', 3: 'Alterar', 4: 'Listar', 0: 'Retornar'}
-    __paises: dict[str, str] = {}
-        
-    PAISES_FILE_PATH = os.path.join(os.path.dirname(__file__), 'countries.json')
-    
-    try:
-        with open('countries.json', 'r', encoding='utf-8') as f:
-            paises_dict = json.load(f)
-            __paises = {item.get('code'): item.get('name') for item in paises_dict}
-    except FileNotFoundError:
-        print("ERRO: O arquivo countries.json não foi encontrado. A lista de países está vazia.")
-    except json.JSONDecodeError:
-        print("ERRO: Falha ao decodificar o JSON do arquivo countries.json.")
-
+ 
     def abre_opcoes(self) -> int:
         self.mostra_titulo('Navios')
         self.mostra_opcoes(self.__opcoes)
@@ -31,14 +20,14 @@ class TelaNavio(TelaUtils):
 
         while True:
             nome = input("Nome: ").strip()
-            if nome == '':
+            if self.valor_eh_vazio(nome):
                 self.mostra_erro('Nome do navio não pode ser vazio')
             else:
                 break
 
         while True:
             codigo_bandeira = input("Bandeira (código ISO 3166): ").strip().upper()
-            bandeira = self.retorna_bandeira(codigo_bandeira)
+            bandeira = self.retorna_pais(codigo_bandeira)
             if bandeira is not None:
                 break
             self.mostra_erro('Código de país no padrão ISO 3166 não existe')
@@ -112,14 +101,6 @@ class TelaNavio(TelaUtils):
             "companhia": companhia,
             "capitao": capitao,
         }
-
-    def retorna_bandeira(self, codigo_bandeira: str) -> Pais | None:
-        if codigo_bandeira == '':
-            return None
-        bandeira_nome = self.__paises.get(codigo_bandeira)
-        if bandeira_nome is not None:
-            return Pais(codigo=codigo_bandeira, nome=bandeira_nome)
-        return None
 
     def mostra_navio(self, navio: Any):
         # aceita objeto com atributos ou dict
