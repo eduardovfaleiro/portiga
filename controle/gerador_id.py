@@ -11,5 +11,5 @@ class GeradorId:
             return 0
 
         ultimo_id = max(self.__lista, key=attrgetter('id')).id
-        novo_id = ultimo_id + 1
+        novo_id = int(ultimo_id) + 1
         return novo_id
