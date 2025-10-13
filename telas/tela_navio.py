@@ -8,7 +8,7 @@ from telas.tela_utils import TelaUtils
 
 
 class TelaNavio(TelaUtils, SeletorPais):
-    __opcoes = {1: 'Incluir', 2: 'Excluir', 3: 'Alterar', 4: 'Listar', 5: 'Carregar', 0: 'Retornar'}
+    __opcoes = {1: 'Incluir', 2: 'Excluir', 3: 'Alterar', 4: 'Listar', 5: 'Carregar', 6: 'Descarregar', 0: 'Retornar'}
  
     def abre_opcoes(self) -> int:
         self.mostra_titulo('Navios')
@@ -135,7 +135,7 @@ class TelaNavio(TelaUtils, SeletorPais):
         """Pede ao usuário o código/id da carga (string sem espaços) para selecionar/descarregar."""
         pattern = r'^\S+$'
         while True:
-            user_input = input('Código/ID da carga ("sair" para cancelar): ').strip()
+            user_input = input('Código da carga ("sair" para cancelar): ').strip()
             if user_input.lower() == 'sair' or user_input == '':
                 return None
             if re.match(pattern, user_input):
@@ -187,7 +187,7 @@ class TelaNavio(TelaUtils, SeletorPais):
                     cpeso = getattr(c, 'peso', '') or ''
                     cvalor = getattr(c, 'valor', '') or ''
                     cargas_txt.append(f'{cid}: {ctipo}, {cpeso} kg, R${cvalor}')
-                print('Cargas:', '; '.join(cargas_txt))
+                print('Cargas:', ' | '.join(cargas_txt))
             else:
                 print('Cargas: N/A')
         else:
