@@ -1,3 +1,4 @@
+from controle.controlador_admin import ControladorAdmin
 from controle.controlador_capitao import ControladorCapitao
 from controle.controlador_chegada import ControladorChegada
 from controle.controlador_companhia import ControladorCompanhia
@@ -16,6 +17,7 @@ class ControladorSistema:
         self.__controlador_chegada = ControladorChegada(self)
         self.__controlador_partida = ControladorPartida(self)
         self.__controlador_capitao = ControladorCapitao(self)
+        self.__controlador_admin = ControladorAdmin(self)
 
     @property
     def controlador_companhia(self):
@@ -54,13 +56,16 @@ class ControladorSistema:
     def abre_tela_capitao(self):
         self.__controlador_capitao.abre_tela()
 
+    def abre_tela_admin(self):
+        self.__controlador_admin.abre_tela()
+
     def encerra(self):
         exit(0)
 
     def abre_tela(self):
         opcoes = {1: self.abre_tela_companhia, 2: self.abre_tela_navio, 3: self.abre_tela_porto, \
                   4: self.abre_tela_chegada, 5: self.abre_tela_partida, 6: self.abre_tela_capitao, \
-                    0: self.encerra}
+                   7: "self.abre_tela_relatorio", 8: self.abre_tela_admin, 0: self.encerra}
 
         while True:
             opcao_escolhida = self.__tela_sistema.abre_opcoes()
