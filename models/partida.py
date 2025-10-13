@@ -15,7 +15,7 @@ class Partida(Movimentacao):
     def to_string_resumido(self):
         max_length = 20
         # TODO(adicionar nome do navio e destino)
-        return f'{self.id} {self._set_length('TESTE NOME NAVIO', max_length)} {self._data_hora_formatada(self.data_hora)} {self._set_length('TESTE NOME PORTO', max_length)}'
+        return f"{self.id} {self._set_length('TESTE NOME NAVIO', max_length)} {self._data_hora_formatada(self.data_hora)} {self._set_length('TESTE NOME PORTO', max_length)}"
     
     def to_string_detalhado(self):
         return (
