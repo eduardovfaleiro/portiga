@@ -105,9 +105,9 @@ class TelaNavio(TelaUtils, SeletorPais):
     def pega_dados_carga(self) -> dict[str, Any] | None:
         self.mostra_titulo('Dados da Carga')
 
-        tipo = input('Tipo da carga: ').strip()
-        if tipo == '':
-            self.mostra_erro('Tipo não pode ser vazio.')
+        produto = input('Produto: ').strip()
+        if produto == '':
+            self.mostra_erro('Produto não pode ser vazio.')
             return None
 
         peso_raw = input('Peso (kg): ').strip()
@@ -128,7 +128,7 @@ class TelaNavio(TelaUtils, SeletorPais):
             self.mostra_erro('Valor inválido.')
             return None
 
-        return {'tipo': tipo, 'peso': peso, 'valor': valor}
+        return {'produto': produto, 'peso': peso, 'valor': valor}
 
     def seleciona_carga(self) -> str | None:
         pattern = r'^\S+$'
@@ -173,10 +173,10 @@ class TelaNavio(TelaUtils, SeletorPais):
                 cargas_txt = []
                 for c in cargas:
                     cid = getattr(c, 'id', None) or getattr(c, 'codigo', None) or str(c)
-                    ctipo = getattr(c, 'tipo', '') or ''
+                    cproduto = getattr(c, 'produto', '') or ''
                     cpeso = getattr(c, 'peso', '') or ''
                     cvalor = getattr(c, 'valor', '') or ''
-                    cargas_txt.append(f'{cid}: {ctipo}, {cpeso} kg, R${cvalor}')
+                    cargas_txt.append(f'{cid}: {cproduto}, {cpeso} kg, R${cvalor}')
                 print('Cargas:', ' | '.join(cargas_txt))
             else:
                 print('Cargas: N/A')

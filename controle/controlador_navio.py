@@ -125,10 +125,10 @@ class ControladorNavio:
             index = self.pega_navio_por_id(id)
             navio = self.__navios[id]
 
-            # tipo
-            tipo = input('Tipo da carga: ').strip()
-            if tipo == '':
-                self.__tela_navio.mostra_erro('Tipo inválido.')
+            # produto
+            produto = input('Produto: ').strip()
+            if produto == '':
+                self.__tela_navio.mostra_erro('Produto inválido.')
                 return
 
             # peso
@@ -159,7 +159,7 @@ class ControladorNavio:
 
             # criar e anexar a carga ao navio
             try:
-                carga = Carga(novo_id_str, tipo, peso, valor)
+                carga = Carga(novo_id_str, produto, peso, valor)
             except Exception as e:
                 self.__tela_navio.mostra_erro(f'Erro ao criar carga: {e}')
                 return
@@ -201,10 +201,10 @@ class ControladorNavio:
             print('\nCargas embarcadas:')
             for c in cargas:
                 cid = getattr(c, 'id', None) or getattr(c, 'codigo', '')
-                ctipo = getattr(c, 'tipo', '')
+                cproduto = getattr(c, 'produto', '')
                 cpeso = getattr(c, 'peso', '')
                 cvalor = getattr(c, 'valor', '')
-                print(f'- {cid} | {ctipo} | {cpeso} kg | R$ {cvalor}')
+                print(f'- {cid} | {cproduto} | {cpeso} kg | R$ {cvalor}')
 
             # solicitar código/id da carga a remover via tela
             codigo = self.__tela_navio.seleciona_carga()
@@ -224,7 +224,7 @@ class ControladorNavio:
 
             carga_removida = cargas.pop(idx_remover)
             navio.cargas = list(cargas)
-            self.__tela_navio.mostra_mensagem(f'Carga {getattr(carga_removida, "id", "tipo", "")} removida com sucesso!')
+            self.__tela_navio.mostra_mensagem(f'Carga {getattr(carga_removida, "id", "")} removida com sucesso!')
             self.lista()
 
     def lista(self) -> bool:

@@ -27,7 +27,7 @@ class ControladorCarga:
             return
 
         codigo = dados.get('codigo')
-        tipo = dados.get('tipo')
+        produto = dados.get('produto')
         peso = dados.get('peso')
         valor = dados.get('valor')
 
@@ -41,7 +41,7 @@ class ControladorCarga:
             return
 
         try:
-            carga = Carga(codigo.strip(), tipo.strip(), float(peso), float(valor))
+            carga = Carga(codigo.strip(), produto.strip(), float(peso), float(valor))
         except Exception as e:
             self.__tela.mostra_erro(f'Erro ao criar carga: {e}')
             return

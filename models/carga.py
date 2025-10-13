@@ -1,7 +1,7 @@
 class Carga:
-    def __init__(self, id: str, tipo: str, peso: float, valor: float):
+    def __init__(self, id: str, produto: str, peso: float, valor: float):
         self.__id = id
-        self.__tipo = tipo
+        self.__produto = produto
         self.__peso = peso
         self.__valor = valor
 
@@ -16,14 +16,14 @@ class Carga:
         self.__id = id
 
     @property
-    def tipo(self):
-        return self.__tipo
+    def produto(self):
+        return self.__produto
 
-    @tipo.setter
-    def tipo(self, tipo: str):
-        if not isinstance(tipo, str):
-            raise TypeError("O tipo deve ser uma string.")
-        self.__tipo = tipo
+    @produto.setter
+    def produto(self, produto: str):
+        if not isinstance(produto, str):
+            raise TypeError("O produto deve ser uma string.")
+        self.__produto = produto
 
     @property
     def peso(self):
