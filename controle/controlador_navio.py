@@ -1,5 +1,7 @@
 from operator import attrgetter
 from typing import Any
+from controle.gerador_id import GeradorId
+from models.carga import Carga
 from models.navio import Navio
 from telas.tela_navio import TelaNavio
 
@@ -41,11 +43,10 @@ class ControladorNavio:
         self.__navios.append(navio)
         self.__tela_navio.mostra_mensagem('Navio adicionado com sucesso!')
 
-    def pega_index_navio_por_id(self, id: int):
+    def pega_navio_por_id(self, id: int) -> Navio | None:
         for i in range(len(self.__navios)):
             if self.__navios[i].id == id:
-                return i
-        return None
+                return self.__navios[i]
 
     def altera(self):
         self.__tela_navio.mostra_titulo('Alterar Navio')
@@ -63,7 +64,7 @@ class ControladorNavio:
                 self.__tela_navio.mostra_erro('Seleção inválida. Forneça o id do navio.')
                 continue
 
-            index = self.pega_index_navio_por_id(selecionado)
+            index = self.pega_navio_por_id(selecionado)
             if index is None:
                 self.__tela_navio.mostra_erro('Navio não existe para o id informado.')
             else:
@@ -109,7 +110,7 @@ class ControladorNavio:
             if id is None:
                 return
 
-            index = self.pega_index_navio_por_id(id)
+            index = self.pega_navio_por_id(id)
             if index is not None:
                 navio = self.__navios.pop(index)
                 self.__tela_navio.mostra_mensagem(f'Navio {navio.id} excluído com sucesso!')
@@ -117,6 +118,73 @@ class ControladorNavio:
                 return
 
             self.__tela_navio.mostra_erro('Navio não encontrado')
+            
+    def carrega(self):
+        """Carrega uma nova Carga diretamente no navio selecionado.
+        A carga recebe um id (string) gerado via GeradorId aplicado às cargas do próprio navio.
+        """
+        self.__tela_navio.mostra_titulo('Carregar Navio')
+
+        tem_navios = self.lista()
+        if not tem_navios:
+            return
+
+        while True:
+            id = self.__tela_navio.seleciona_navio()
+            if id is None:
+                return
+
+            index = self.pega_navio_por_id(id)
+            navio = self.__navios[id]
+
+            # tipo
+            tipo = input('Tipo da carga: ').strip()
+            if tipo == '':
+                self.__tela_navio.mostra_erro('Tipo inválido.')
+                return
+
+            # peso
+            peso_raw = input('Peso (kg): ').strip()
+            try:
+                peso = float(peso_raw)
+                if peso < 0:
+                    raise ValueError()
+            except Exception:
+                self.__tela_navio.mostra_erro('Peso inválido.')
+                return
+
+            # valor
+            valor_raw = input('Valor (R$): ').strip()
+            try:
+                valor = float(valor_raw)
+                if valor < 0:
+                    raise ValueError()
+            except Exception:
+                self.__tela_navio.mostra_erro('Valor inválido.')
+                return
+
+            # gerar id para a carga usando GeradorId sobre as cargas do próprio navio
+            cargas_do_navio = getattr(navio, 'cargas', []) or []
+            gerador = GeradorId(cargas_do_navio)
+            novo_id = gerador.gera_id()
+            novo_id_str = str(novo_id)
+
+            # criar e anexar a carga ao navio
+            try:
+                carga = Carga(novo_id_str, tipo, peso, valor)
+            except Exception as e:
+                self.__tela_navio.mostra_erro(f'Erro ao criar carga: {e}')
+                return
+
+            # compatibilidade: expor atributo 'codigo' se algum trecho do código usar isso
+            try:
+                setattr(carga, 'codigo', carga.id)
+            except Exception:
+                pass
+
+            navio.cargas = cargas_do_navio + [carga]
+            self.__tela_navio.mostra_mensagem(f'Carga {carga.id} adicionada ao navio {navio.id}.')
+            return
 
     def lista(self) -> bool:
         print('\nListando navios...')
@@ -134,7 +202,7 @@ class ControladorNavio:
         self.__controlador_sistema.abre_tela()
 
     def abre_tela(self):
-        opcoes: dict[int, Any] = {1: self.inclui, 2: self.exclui, 3: self.altera, 4: self.lista, 0: self.retorna}
+        opcoes: dict[int, Any] = {1: self.inclui, 2: self.exclui, 3: self.altera, 4: self.lista, 5:self.carrega,0: self.retorna}
 
         continua = True
         while continua:
