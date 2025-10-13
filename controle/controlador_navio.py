@@ -56,17 +56,13 @@ class ControladorNavio:
             return
 
         while True:
-            selecionado = self.__tela_navio.seleciona_navio()
-            if selecionado is None:
+            id = self.__tela_navio.seleciona_navio()
+            if id is None:
                 return
 
-            if not isinstance(selecionado, int):
-                self.__tela_navio.mostra_erro('Seleção inválida. Forneça o id do navio.')
-                continue
-
-            index = self.pega_navio_por_id(selecionado)
-            if index is None:
-                self.__tela_navio.mostra_erro('Navio não existe para o id informado.')
+            navio_atual = self.pega_navio_por_id(id)
+            if navio_atual is None:
+                self.__tela_navio.mostra_erro('Navio não existe.')
             else:
                 break
 
@@ -74,18 +70,13 @@ class ControladorNavio:
         if not novos_dados:
             return
 
-        navio_atual = self.__navios[index]
-
-        # nome
-        if novos_dados.get('nome') is not None and str(novos_dados.get('nome')).strip() != '':
+        if novos_dados['nome'] is not None and novos_dados['nome'].strip() != '':
             navio_atual.nome = novos_dados['nome']
 
-        # bandeira (Tela retorna Pais ou None)
-        if novos_dados.get('bandeira') is not None:
+        if novos_dados['bandeira'] is not None:
             navio_atual.bandeira = novos_dados['bandeira']
 
-        # companhia (id -> instância)
-        if novos_dados.get('companhia') is not None:
+        if novos_dados['companhia'] is not None:
             ctrl_comp = getattr(self.__controlador_sistema, 'controlador_companhia', None)
             if isinstance(novos_dados['companhia'], int) and ctrl_comp is not None and hasattr(ctrl_comp, 'pega_companhia_por_id'):
                 navio_atual.companhia = ctrl_comp.pega_companhia_por_id(novos_dados['companhia'])
@@ -180,8 +171,8 @@ class ControladorNavio:
                 pass
 
             navio.cargas = cargas_do_navio + [carga]
-            self.__tela_navio.mostra_mensagem(f'Carga {carga.id} adicionada ao navio {navio.id}.')
-            return
+            self.__tela_navio.mostra_mensagem(f'Carga {carga.id} adicionada com sucesso!')
+            self.lista()
         
     def descarrega(self):
         self.__tela_navio.mostra_titulo('Descarregar Navio')
@@ -233,8 +224,8 @@ class ControladorNavio:
 
             carga_removida = cargas.pop(idx_remover)
             navio.cargas = list(cargas)
-            self.__tela_navio.mostra_mensagem(f'Carga {getattr(carga_removida, "id", "")} descarregada do navio {navio.id}.')
-            return
+            self.__tela_navio.mostra_mensagem(f'Carga {getattr(carga_removida, "id", "tipo", "")} removida com sucesso!')
+            self.lista()
 
     def lista(self) -> bool:
         print('\nListando navios...')
