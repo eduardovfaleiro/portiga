@@ -65,3 +65,6 @@ class Navio:
         if not all(isinstance(carga, Carga) for carga in cargas):
             raise TypeError("A lista de cargas deve conter apenas instâncias da classe Carga.")
         self.__cargas = cargas
+
+    def __str__(self):
+        return f'{self.id} {self.nome}'
