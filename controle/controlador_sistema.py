@@ -17,6 +17,10 @@ class ControladorSistema:
         self.__controlador_partida = ControladorPartida(self)
         self.__controlador_capitao = ControladorCapitao(self)
 
+    @property
+    def controlador_navio(self):
+        return self.__controlador_navio
+
     def inicializa(self):
         self.abre_tela()
 

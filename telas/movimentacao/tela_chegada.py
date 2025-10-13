@@ -8,11 +8,10 @@ class TelaChegada(TelaMovimentacao):
     def pega_dados(self) -> dict[str, Any]:
         self.mostra_titulo('Dados Chegada')
         
-        navio = input("Navio: ")
+        navio = self.pega_digito('Navio: ', 'Código do navio só pode ser composto por dígitos')
         data_hora = self.pega_data_hora()
-
-        dias_viagem = int(input('Dias de viagem: '))
-        procedencia = int(input('Procedência (código do porto): '))
+        dias_viagem = self.pega_digito('Dias de viagem: ', 'Dias de viagem só pode ser composto por dígitos')
+        procedencia = self.pega_digito('Procedência: ', 'Procedência (código do porto) só pode ser composto por dígitos')
 
         return {'navio': navio, 'data_hora': data_hora, 'dias_viagem': dias_viagem, \
                 'procedencia': procedencia}

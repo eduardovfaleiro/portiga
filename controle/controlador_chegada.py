@@ -14,7 +14,11 @@ class ControladorChegada(GeradorId):
     def inclui(self):
         navio, data_hora, dias_viagem, procedencia = \
             self.__tela.pega_dados().values()
-        chegada = Chegada(id=self.gera_id(), navio=None, data_hora=data_hora, \
+        
+        navio = self.__controlador_sistema.controlador_navio.pega_navio_por_id(navio)
+        procedencia = self.__controlador_sistema.controlador_porto.pega_porto_por_id(procedencia)
+
+        chegada = Chegada(id=self.gera_id(), navio=navio, data_hora=data_hora, \
                           dias_viagem=dias_viagem, procedencia=procedencia)
         
         self.__chegadas.append(chegada)
