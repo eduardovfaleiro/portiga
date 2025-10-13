@@ -182,6 +182,59 @@ class ControladorNavio:
             navio.cargas = cargas_do_navio + [carga]
             self.__tela_navio.mostra_mensagem(f'Carga {carga.id} adicionada ao navio {navio.id}.')
             return
+        
+    def descarrega(self):
+        self.__tela_navio.mostra_titulo('Descarregar Navio')
+
+        tem_navios = self.lista()
+        if not tem_navios:
+            return
+
+        while True:
+            id = self.__tela_navio.seleciona_navio()
+            if id is None:
+                return
+
+            index = self.pega_navio_por_id(id)
+            if index is None:
+                self.__tela_navio.mostra_erro('Navio não existe para o id informado.')
+                continue
+            navio = self.__navios[id]
+
+            cargas = getattr(navio, 'cargas', []) or []
+            if len(cargas) == 0:
+                self.__tela_navio.mostra_erro('Este navio não possui cargas para descarregar.')
+                return
+
+            # listar cargas embarcadas
+            print('\nCargas embarcadas:')
+            for c in cargas:
+                cid = getattr(c, 'id', None) or getattr(c, 'codigo', '')
+                ctipo = getattr(c, 'tipo', '')
+                cpeso = getattr(c, 'peso', '')
+                cvalor = getattr(c, 'valor', '')
+                print(f'- {cid} | {ctipo} | {cpeso} kg | R$ {cvalor}')
+
+            # solicitar código/id da carga a remover via tela
+            codigo = self.__tela_navio.seleciona_carga()
+            if codigo is None:
+                return
+
+            # localizar carga no navio
+            idx_remover = None
+            for i, c in enumerate(cargas):
+                if str(getattr(c, 'id', '')) == codigo or str(getattr(c, 'codigo', '')) == codigo:
+                    idx_remover = i
+                    break
+
+            if idx_remover is None:
+                self.__tela_navio.mostra_erro('Carga não encontrada.')
+                continue
+
+            carga_removida = cargas.pop(idx_remover)
+            navio.cargas = list(cargas)
+            self.__tela_navio.mostra_mensagem(f'Carga {getattr(carga_removida, "id", "")} descarregada do navio {navio.id}.')
+            return
 
     def lista(self) -> bool:
         print('\nListando navios...')
@@ -199,7 +252,7 @@ class ControladorNavio:
         self.__controlador_sistema.abre_tela()
 
     def abre_tela(self):
-        opcoes: dict[int, Any] = {1: self.inclui, 2: self.exclui, 3: self.altera, 4: self.lista, 5:self.carrega,0: self.retorna}
+        opcoes: dict[int, Any] = {1: self.inclui, 2: self.exclui, 3: self.altera, 4: self.lista, 5:self.carrega, 6: self.descarrega, 0: self.retorna}
 
         continua = True
         while continua:
