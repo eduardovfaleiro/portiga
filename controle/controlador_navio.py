@@ -37,7 +37,7 @@ class ControladorNavio:
                 capitao = ctrl_cap.pega_capitao_por_id(dados['capitao'])
 
         novo_id = self.gera_id()
-        navio = Navio(novo_id, dados['nome'], dados['bandeira'], companhia, capitao)
+        navio = Navio(novo_id, dados['nome'], dados['bandeira'], companhia, capitao, [])
         self.__navios.append(navio)
         self.__tela_navio.mostra_mensagem('Navio adicionado com sucesso!')
 

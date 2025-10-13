@@ -65,7 +65,7 @@ class ControladorCompanhia(GeradorId):
                 companhia = self.__companhias[i]
                 if companhia.id == id:
                     self.__companhias.pop(i)
-                    self.__tela_companhia.mostra_mensagem(f'Companhia {companhia.id} excluída com sucesso!')
+                    self.__tela_companhia.mostra_mensagem(f'Companhia {companhia.nome} (ID: {companhia.id}) excluída com sucesso!')
                     self.lista()
                     return
                     
