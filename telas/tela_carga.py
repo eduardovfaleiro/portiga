@@ -14,8 +14,8 @@ class TelaCarga(TelaUtils):
     def pega_dados_carga(self) -> dict[str, Any] | None:
         self.mostra_titulo('Dados Carga')
 
-        codigo = input('Código: ').strip()
-        if codigo == '':
+        id = input('Código: ').strip()
+        if id == '':
             self.mostra_erro('Código não pode ser vazio')
             return None
 
@@ -42,14 +42,14 @@ class TelaCarga(TelaUtils):
             self.mostra_erro('Valor inválido')
             return None
 
-        return {'codigo': codigo, 'produto': produto, 'peso': peso, 'valor': valor}
+        return {'id': id, 'produto': produto, 'peso': peso, 'valor': valor}
 
     def mostra_carga(self, carga: Any):
-        codigo = getattr(carga, 'codigo', '')
+        id = getattr(carga, 'id', '')
         produto = getattr(carga, 'produto', '')
         peso = getattr(carga, 'peso', '')
         valor = getattr(carga, 'valor', '')
-        print(f'Código: {codigo} | Produto: {produto} | Peso: {peso} kg | Valor: R$ {valor}')
+        print(f'Código: {id} | Produto: {produto} | Peso: {peso} kg | Valor: R$ {valor}')
 
     def seleciona_carga(self) -> str | None:
         pattern = r'^\S+$'  # código sem espaços

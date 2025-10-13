@@ -9,14 +9,14 @@ class ControladorCarga:
         self.__controlador_sistema = controlador_sistema
         self.__tela = TelaCarga()
 
-    def pega_index_carga_por_codigo(self, codigo: str) -> int | None:
+    def pega_index_carga_por_id(self, id: str) -> int | None:
         for i, carga in enumerate(self.__cargas):
-            if getattr(carga, 'codigo', None) == codigo:
+            if getattr(carga, 'id', None) == id:
                 return i
         return None
 
-    def pega_carga_por_codigo(self, codigo: str) -> Carga | None:
-        idx = self.pega_index_carga_por_codigo(codigo)
+    def pega_carga_por_id(self, id: str) -> Carga | None:
+        idx = self.pega_index_carga_por_id(id)
         if idx is None:
             return None
         return self.__cargas[idx]
@@ -26,22 +26,23 @@ class ControladorCarga:
         if dados is None:
             return
 
-        codigo = dados.get('codigo')
+        id = dados.get('id')
         produto = dados.get('produto')
+        tipo = dados.get('tipo')
         peso = dados.get('peso')
         valor = dados.get('valor')
 
         # validações mínimas
-        if not isinstance(codigo, str) or codigo.strip() == '':
+        if not isinstance(id, str) or id.strip() == '':
             self.__tela.mostra_erro('Código inválido')
             return
 
-        if self.pega_carga_por_codigo(codigo) is not None:
+        if self.pega_carga_por_id(id) is not None:
             self.__tela.mostra_erro('Já existe carga com esse código')
             return
 
         try:
-            carga = Carga(codigo.strip(), produto.strip(), float(peso), float(valor))
+            carga = Carga(id.strip(), produto.strip(), tipo.strip(), float(peso), float(valor))
         except Exception as e:
             self.__tela.mostra_erro(f'Erro ao criar carga: {e}')
             return
@@ -55,17 +56,17 @@ class ControladorCarga:
         if not self.lista():
             return
 
-        codigo = self.__tela.seleciona_carga()
-        if codigo is None:
+        id = self.__tela.seleciona_carga()
+        if id is None:
             return
 
-        index = self.pega_index_carga_por_codigo(codigo)
+        index = self.pega_index_carga_por_id(id)
         if index is None:
             self.__tela.mostra_erro('Carga não encontrada')
             return
 
         carga = self.__cargas.pop(index)
-        self.__tela.mostra_mensagem(f'Carga {getattr(carga, "codigo", "")} excluída com sucesso!')
+        self.__tela.mostra_mensagem(f'Carga {getattr(carga, "id", "")} excluída com sucesso!')
         self.lista()
 
     def lista(self) -> bool:
