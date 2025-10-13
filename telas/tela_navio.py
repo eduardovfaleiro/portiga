@@ -68,7 +68,7 @@ class TelaNavio(TelaUtils, SeletorPais):
             if codigo_bandeira == '':
                 bandeira = None
                 break
-            bandeira = self.retorna_bandeira(codigo_bandeira)
+            bandeira = self.retorna_pais(codigo_bandeira)
             if bandeira is not None:
                 break
             self.mostra_erro('Código de país no padrão ISO 3166 não existe')
@@ -103,7 +103,6 @@ class TelaNavio(TelaUtils, SeletorPais):
         }
 
     def pega_dados_carga(self) -> dict[str, Any] | None:
-        """Solicita tipo, peso e valor da carga e retorna um dicionário ou None."""
         self.mostra_titulo('Dados da Carga')
 
         tipo = input('Tipo da carga: ').strip()
@@ -132,7 +131,6 @@ class TelaNavio(TelaUtils, SeletorPais):
         return {'tipo': tipo, 'peso': peso, 'valor': valor}
 
     def seleciona_carga(self) -> str | None:
-        """Pede ao usuário o código/id da carga (string sem espaços) para selecionar/descarregar."""
         pattern = r'^\S+$'
         while True:
             user_input = input('Código da carga ("sair" para cancelar): ').strip()
@@ -141,14 +139,6 @@ class TelaNavio(TelaUtils, SeletorPais):
             if re.match(pattern, user_input):
                 return user_input
             self.mostra_erro('Código da carga inválido (não pode conter espaços).')
-
-    def retorna_bandeira(self, codigo_bandeira: str) -> Pais | None:
-        if codigo_bandeira == '':
-            return None
-        bandeira_nome = self.__paises.get(codigo_bandeira)
-        if bandeira_nome is not None:
-            return Pais(codigo=codigo_bandeira, nome=bandeira_nome)
-        return None
 
     def mostra_navio(self, navio: Any):
         # aceita objeto com atributos ou dict
