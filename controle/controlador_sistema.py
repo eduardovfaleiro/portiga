@@ -18,12 +18,20 @@ class ControladorSistema:
         self.__controlador_capitao = ControladorCapitao(self)
 
     @property
+    def controlador_companhia(self):
+        return self.__controlador_companhia
+
+    @property
     def controlador_navio(self):
         return self.__controlador_navio
     
     @property
     def controlador_porto(self):
         return self.__controlador_porto
+
+    @property
+    def controlador_capitao(self):
+        return self.__controlador_capitao
 
     def inicializa(self):
         self.abre_tela()
