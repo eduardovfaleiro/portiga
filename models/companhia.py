@@ -5,8 +5,6 @@ class Companhia:
         self.__id = id
         self.__nome = nome
         self.__pais_sede = pais_sede
-        self.__navios = navios# type: ignore
-        self.__capitaes = capitaes# type: ignore
         
     @property
     def id(self):
