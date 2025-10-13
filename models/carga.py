@@ -1,7 +1,8 @@
 class Carga:
-    def __init__(self, id: str, produto: str, peso: float, valor: float):
+    def __init__(self, id: str, produto: str, tipo: int, peso: float, valor: float):
         self.__id = id
         self.__produto = produto
+        self.__tipo = tipo
         self.__peso = peso
         self.__valor = valor
 
@@ -26,6 +27,18 @@ class Carga:
         self.__produto = produto
 
     @property
+    def tipo(self):
+        return self.__tipo
+    
+    @tipo.setter
+    def tipo(self, tipo: int):
+        if not isinstance(tipo, int):
+            raise TypeError("O tipo deve ser um número inteiro.")
+        if tipo < 1 or tipo > 4:
+            raise ValueError("O tipo deve ser um número entre 1 e 4.")
+        self.__tipo = tipo
+
+    @property
     def peso(self):
         return self.__peso
 
@@ -48,3 +61,10 @@ class Carga:
         if valor < 0:
             raise ValueError("O valor não pode ser negativo.")
         self.__valor = valor
+
+    tipos_carga = {
+        1: "Granel sólido",
+        2: "Granel líquido",
+        3: "Carga geral",
+        4: "Carga conteinerizada"
+    }
