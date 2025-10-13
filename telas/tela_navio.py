@@ -58,13 +58,13 @@ class TelaNavio(TelaUtils, SeletorPais):
     def pega_dados_opcionais_navio(self) -> dict[str, Any]:
         self.mostra_titulo('Novos Dados Navio')
 
-        nome = input("Nome (enter para manter): ").strip()
+        nome = input("Nome: ").strip()
         if nome == '':
             nome = None
 
         # Bandeira opcional
         while True:
-            codigo_bandeira = input("Bandeira (código ISO 3166) (enter para manter): ").strip().upper()
+            codigo_bandeira = input("Bandeira (código ISO 3166): ").strip().upper()
             if codigo_bandeira == '':
                 bandeira = None
                 break
@@ -75,7 +75,7 @@ class TelaNavio(TelaUtils, SeletorPais):
 
         # Companhia opcional
         while True:
-            companhia_raw = input("Código da companhia (enter para manter): ").strip()
+            companhia_raw = input("Código da companhia: ").strip()
             if companhia_raw == '':
                 companhia = None
                 break
@@ -86,7 +86,7 @@ class TelaNavio(TelaUtils, SeletorPais):
 
         # Capitão opcional
         while True:
-            capitao_raw = input("Código do capitão (enter para manter): ").strip()
+            capitao_raw = input("Código do capitão: ").strip()
             if capitao_raw == '':
                 capitao = None
                 break
@@ -204,4 +204,3 @@ class TelaNavio(TelaUtils, SeletorPais):
 
     def mostra_mensagem(self, mensagem: str):
         print(mensagem)
-# ...existing code...
