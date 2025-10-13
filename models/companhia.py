@@ -1,12 +1,10 @@
-from typing import Optional
 from models.pais import Pais
 
 class Companhia:
-    def __init__(self, id: int, nome: str, pais_sede: Pais, navios: list = []):
+    def __init__(self, id: int, nome: str, pais_sede: Pais):
         self.__id = id
         self.__nome = nome
         self.__pais_sede = pais_sede
-        self.__navios = navios# type: ignore
         
     @property
     def id(self):
@@ -31,15 +29,7 @@ class Companhia:
         if not isinstance(pais_sede, Pais): # pyright: ignore[reportUnnecessaryIsInstance]
            raise TypeError("O nome do país sede deve ser uma instância da classe Pais.")
         self.__pais_sede = pais_sede
-        
-    @property
-    def navios(self):
-        return self.__navios.copy()# type: ignore
 
-    @property
-    def capitaes(self):
-        return self.__capitaes.copy()# type: ignore
-    
     def __str__(self):
         return (
             f'Código: {self.id}\n'

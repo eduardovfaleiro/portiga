@@ -7,9 +7,9 @@ class TelaPartida(TelaMovimentacao):
     def pega_dados(self) -> dict[str, Any]:
         self.mostra_titulo('Dados Partida')
         
-        navio = input("Navio: ")
+        navio = self.pega_digito('Navio: ', 'Código do navio só pode ser composto por dígitos')
         data_hora = self.pega_data_hora()
-        destino = int(input('Destino (porto): '))
+        destino = self.pega_digito('Destino: ', 'Destino (código do porto) só pode ser composto por dígitos')
 
         return {'navio': navio, 'data_hora': data_hora, 'destino': destino}
 

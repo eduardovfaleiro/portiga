@@ -2,6 +2,7 @@
 import re
 
 from utils import Utils
+from valor_vazio_exception import ValorVazioException
 
 
 class TelaUtils(Utils):
@@ -56,3 +57,22 @@ class TelaUtils(Utils):
 
         id = int(user_input)
         return id
+    
+    def pega_str(self, mensagem_input: str, mensagem_erro: str) -> str:
+        while True:
+            try:
+                string = input(mensagem_input).strip()
+                if self.valor_eh_vazio(string):
+                    raise ValorVazioException(mensagem_erro)
+                
+                return string
+            except ValorVazioException as e:
+                self.mostra_erro(e.args[0])
+
+    def pega_digito(self, mensagem_input: str, mensagem_erro: str) -> int:
+        while True:
+            digito_str = input(mensagem_input)
+            if digito_str.isdigit():
+                return int(digito_str)
+                
+            self.mostra_erro('Código do navio só pode ser composto por dígitos')
