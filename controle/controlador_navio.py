@@ -120,9 +120,6 @@ class ControladorNavio:
             self.__tela_navio.mostra_erro('Navio não encontrado')
             
     def carrega(self):
-        """Carrega uma nova Carga diretamente no navio selecionado.
-        A carga recebe um id (string) gerado via GeradorId aplicado às cargas do próprio navio.
-        """
         self.__tela_navio.mostra_titulo('Carregar Navio')
 
         tem_navios = self.lista()
