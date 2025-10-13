@@ -20,6 +20,10 @@ class ControladorSistema:
     @property
     def controlador_navio(self):
         return self.__controlador_navio
+    
+    @property
+    def controlador_porto(self):
+        return self.__controlador_porto
 
     def inicializa(self):
         self.abre_tela()
