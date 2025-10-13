@@ -5,15 +5,21 @@ from typing import Any
 from models.pais import Pais
 from telas.tela_utils import TelaUtils
 
-
 class TelaNavio(TelaUtils):
-    __opcoes = {1: 'Incluir', 2: 'Excluir', 3: 'Alterar', 4: 'Listar', 0: 'Retornar'}
+    __opcoes = {
+        1: 'Incluir',
+        2: 'Excluir',
+        3: 'Alterar',
+        4: 'Listar',
+        5: 'Carregar',
+        0: 'Retornar'
+    }
     __paises: dict[str, str] = {}
-        
+
     PAISES_FILE_PATH = os.path.join(os.path.dirname(__file__), 'countries.json')
-    
+
     try:
-        with open('countries.json', 'r', encoding='utf-8') as f:
+        with open(PAISES_FILE_PATH, 'r', encoding='utf-8') as f:
             paises_dict = json.load(f)
             __paises = {item.get('code'): item.get('name') for item in paises_dict}
     except FileNotFoundError:
@@ -69,13 +75,13 @@ class TelaNavio(TelaUtils):
     def pega_dados_opcionais_navio(self) -> dict[str, Any]:
         self.mostra_titulo('Novos Dados Navio')
 
-        nome = input("Nome: ").strip()
+        nome = input("Nome (enter para manter): ").strip()
         if nome == '':
             nome = None
 
         # Bandeira opcional
         while True:
-            codigo_bandeira = input("Bandeira (código ISO 3166): ").strip().upper()
+            codigo_bandeira = input("Bandeira (código ISO 3166) (enter para manter): ").strip().upper()
             if codigo_bandeira == '':
                 bandeira = None
                 break
@@ -86,7 +92,7 @@ class TelaNavio(TelaUtils):
 
         # Companhia opcional
         while True:
-            companhia_raw = input("Código da companhia: ").strip()
+            companhia_raw = input("Código da companhia (enter para manter): ").strip()
             if companhia_raw == '':
                 companhia = None
                 break
@@ -97,7 +103,7 @@ class TelaNavio(TelaUtils):
 
         # Capitão opcional
         while True:
-            capitao_raw = input("Código do capitão: ").strip()
+            capitao_raw = input("Código do capitão (enter para manter): ").strip()
             if capitao_raw == '':
                 capitao = None
                 break
@@ -112,6 +118,46 @@ class TelaNavio(TelaUtils):
             "companhia": companhia,
             "capitao": capitao,
         }
+
+    def pega_dados_carga(self) -> dict[str, Any] | None:
+        """Solicita tipo, peso e valor da carga e retorna um dicionário ou None."""
+        self.mostra_titulo('Dados da Carga')
+
+        tipo = input('Tipo da carga: ').strip()
+        if tipo == '':
+            self.mostra_erro('Tipo não pode ser vazio.')
+            return None
+
+        peso_raw = input('Peso (kg): ').strip()
+        try:
+            peso = float(peso_raw)
+            if peso < 0:
+                raise ValueError()
+        except Exception:
+            self.mostra_erro('Peso inválido.')
+            return None
+
+        valor_raw = input('Valor (R$): ').strip()
+        try:
+            valor = float(valor_raw)
+            if valor < 0:
+                raise ValueError()
+        except Exception:
+            self.mostra_erro('Valor inválido.')
+            return None
+
+        return {'tipo': tipo, 'peso': peso, 'valor': valor}
+
+    def seleciona_carga(self) -> str | None:
+        """Pede ao usuário o código/id da carga (string sem espaços) para selecionar/descarregar."""
+        pattern = r'^\S+$'
+        while True:
+            user_input = input('Código/ID da carga ("sair" para cancelar): ').strip()
+            if user_input.lower() == 'sair' or user_input == '':
+                return None
+            if re.match(pattern, user_input):
+                return user_input
+            self.mostra_erro('Código da carga inválido (não pode conter espaços).')
 
     def retorna_bandeira(self, codigo_bandeira: str) -> Pais | None:
         if codigo_bandeira == '':
@@ -129,12 +175,14 @@ class TelaNavio(TelaUtils):
             bandeira = navio.get('bandeira')
             companhia = navio.get('companhia')
             capitao = navio.get('capitao')
+            cargas = navio.get('cargas', [])
         else:
             id_ = getattr(navio, 'id', '')
             nome = getattr(navio, 'nome', '')
             bandeira = getattr(navio, 'bandeira', None)
             companhia = getattr(navio, 'companhia', None)
             capitao = getattr(navio, 'capitao', None)
+            cargas = getattr(navio, 'cargas', [])
 
         bandeira_txt = f'{bandeira.codigo} {bandeira.nome}' if bandeira else 'N/A'
         companhia_txt = getattr(companhia, 'id', companhia) if companhia is not None else 'N/A'
@@ -145,6 +193,21 @@ class TelaNavio(TelaUtils):
         print(f'Bandeira: {bandeira_txt}')
         print(f'Companhia: {companhia_txt}')
         print(f'Capitão: {capitao_txt}')
+
+        # mostra resumo das cargas embarcadas (se houver)
+        if cargas:
+            if isinstance(cargas, list):
+                cargas_txt = []
+                for c in cargas:
+                    cid = getattr(c, 'id', None) or getattr(c, 'codigo', None) or str(c)
+                    ctipo = getattr(c, 'tipo', '') or ''
+                    cpeso = getattr(c, 'peso', '') or ''
+                    cargas_txt.append(f'{cid} ({ctipo}, {cpeso}kg)')
+                print('Cargas:', '; '.join(cargas_txt))
+            else:
+                print('Cargas: N/A')
+        else:
+            print('Cargas: Nenhuma')
 
     def seleciona_navio(self) -> int | None:
         pattern = r'^\d+$'
@@ -158,3 +221,4 @@ class TelaNavio(TelaUtils):
 
     def mostra_mensagem(self, mensagem: str):
         print(mensagem)
+# ...existing code...
