@@ -2,12 +2,11 @@ from typing import Optional
 from models.pais import Pais
 
 class Companhia:
-    def __init__(self, id: int, nome: str, pais_sede: Pais, navios: list = [], capitaes: list = []):
+    def __init__(self, id: int, nome: str, pais_sede: Pais, navios: list = []):
         self.__id = id
         self.__nome = nome
         self.__pais_sede = pais_sede
         self.__navios = navios# type: ignore
-        self.__capitaes = capitaes# type: ignore
         
     @property
     def id(self):

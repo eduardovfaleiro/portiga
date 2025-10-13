@@ -24,6 +24,15 @@ class TelaCarga(TelaUtils):
             self.mostra_erro('Produto não pode ser vazio')
             return None
 
+        tipo_raw = input('Tipo: ').strip()
+        tipo = int(tipo_raw)
+        if tipo == '':
+            self.mostra_erro('Tipo não pode ser vazio')
+            return None
+        if tipo < 1 or tipo > 4:
+            self.mostra_erro('Tipo deve ser um número entre 1 e 4')
+            return None
+
         peso_raw = input('Peso (kg): ').strip()
         try:
             peso = float(peso_raw)
@@ -42,14 +51,15 @@ class TelaCarga(TelaUtils):
             self.mostra_erro('Valor inválido')
             return None
 
-        return {'id': id, 'produto': produto, 'peso': peso, 'valor': valor}
+        return {'id': id, 'produto': produto, 'tipo': tipo, 'peso': peso, 'valor': valor}
 
     def mostra_carga(self, carga: Any):
         id = getattr(carga, 'id', '')
         produto = getattr(carga, 'produto', '')
+        tipo = getattr(carga, 'tipo', '')
         peso = getattr(carga, 'peso', '')
         valor = getattr(carga, 'valor', '')
-        print(f'Código: {id} | Produto: {produto} | Peso: {peso} kg | Valor: R$ {valor}')
+        print(f'Código: {id} | Produto: {produto} | Tipo: {tipo} | Peso: {peso} kg | Valor: R$ {valor}')
 
     def seleciona_carga(self) -> str | None:
         pattern = r'^\S+$'  # código sem espaços
