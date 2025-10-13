@@ -1,19 +1,19 @@
 class Carga:
-    def __init__(self, codigo: str, tipo: str, peso: float, valor: float):
-        self.__codigo = codigo
+    def __init__(self, id: str, tipo: str, peso: float, valor: float):
+        self.__id = id
         self.__tipo = tipo
         self.__peso = peso
         self.__valor = valor
 
     @property
-    def codigo(self):
-        return self.__codigo
+    def id(self):
+        return self.__id
 
-    @codigo.setter
-    def codigo(self, codigo: str):
-        if not isinstance(codigo, str):
+    @id.setter
+    def id(self, id: str):
+        if not isinstance(id, str):
             raise TypeError("O código deve ser uma string.")
-        self.__codigo = codigo
+        self.__id = id
 
     @property
     def tipo(self):
