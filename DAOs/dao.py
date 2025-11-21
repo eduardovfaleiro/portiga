@@ -20,6 +20,14 @@ class DAO(ABC):
         self.__cache[key] = obj
         self.__dump()
 
+    def update(self, key, obj):
+        try:
+            if(self.__cache[key] != None):
+                self.__cache[key] = obj
+                self.__dump()
+        except KeyError:
+            pass
+
     def get(self, key):
         try:
             return self.__cache[key]
