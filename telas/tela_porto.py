@@ -31,8 +31,6 @@ class TelaPorto(TelaUtils, SeletorPais):
                 break
 
             self.mostra_erro('Código de país no padrão ISO 3166 não existe')
-                
-        print('LISTA ADMINISTRADOR E PEDE PELO CÓDIGO')
 
         return {'nome': nome, 'cidade': cidade, 'pais': pais}
     
@@ -60,8 +58,6 @@ class TelaPorto(TelaUtils, SeletorPais):
                 break
 
             self.mostra_erro('Código de país no padrão ISO 3166 não existe')
-
-        print('LISTA ADMINISTRADOR E PEDE PELO CÓDIGO')
 
         return {"nome": nome, "cidade": cidade, "pais": pais, "administrador": None}
 
