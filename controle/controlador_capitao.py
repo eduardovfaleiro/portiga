@@ -3,36 +3,25 @@ from typing import Any
 from controle.gerador_id import GeradorId
 from models.capitao import Capitao
 from telas.tela_capitao import TelaCapitao
+from DAOs.capitao_dao import CapitaoDAO
 
 class ControladorCapitao(GeradorId):
     def __init__(self, controlador_sistema):  # type: ignore
-        self.__capitaes: list[Capitao] = []
+        self.__capitao_DAO = CapitaoDAO()
         self.__controlador_sistema = controlador_sistema
         self.__tela_capitao = TelaCapitao()
-
-        super().__init__(self.__capitaes)
+        super().__init__(self.__capitao_DAO.get_all())
 
     def inclui(self):
         dados = self.__tela_capitao.pega_dados_capitao()
         if not dados:
             return
-
         capitao = Capitao(self.gera_id(), dados['nome'])
-        self.__capitaes.append(capitao)
+        self.__capitao_DAO.add(capitao)
         self.__tela_capitao.mostra_mensagem('Capitão adicionado com sucesso!')
 
-    def pega_index_capitao_por_id(self, id: int):
-        for i in range(len(self.__capitaes)):
-            if self.__capitaes[i].id == id:
-                return i
-            
-        return None
-
     def pega_capitao_por_id(self, id: int):
-        idx = self.pega_index_capitao_por_id(id)
-        if idx is None:
-            return None
-        return self.__capitaes[idx]
+        return self.__capitao_DAO.get(id)
 
     def exclui(self):
         self.__tela_capitao.mostra_titulo('Excluir Capitão')
@@ -44,23 +33,25 @@ class ControladorCapitao(GeradorId):
         if selecionado is None:
             return
 
-        index = self.pega_index_capitao_por_id(selecionado)
-        if index is None:
+        capitao = self.__capitao_DAO.get(selecionado)
+
+        if capitao is None:
             self.__tela_capitao.mostra_erro('Capitão não encontrado')
             return
 
-        capitao = self.__capitaes.pop(index)
+        self.__capitao_DAO.remove(selecionado)
         self.__tela_capitao.mostra_mensagem(f'Capitão {capitao.nome} (ID: {capitao.id}) removido com sucesso!')
         self.lista()
 
     def lista(self) -> bool:
         print('\nListando capitães...')
+        capitaes = self.__capitao_DAO.get_all()
 
-        if len(self.__capitaes) == 0:
+        if len(capitaes) == 0:
             print('Nenhum capitão encontrado')
             return False
 
-        for capitao in self.__capitaes:
+        for capitao in capitaes:
             self.__tela_capitao.mostra_capitao(capitao)
 
         return True
