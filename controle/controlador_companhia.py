@@ -19,11 +19,7 @@ class ControladorCompanhia(GeradorId):
         self.__tela_companhia.mostra_mensagem('Companhia adicionada com sucesso!')
 
     def pega_companhia_por_id(self, id: int) -> Companhia | None:
-        for i in range(len(self.__companhias)):
-            if self.__companhias[i].id == id:
-                return self.__companhias[i]
-            
-        return None
+        return self.__companhia_DAO.get(id)
 
     def altera(self):
         self.__tela_companhia.mostra_titulo('Alterar Companhia')
