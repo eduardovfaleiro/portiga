@@ -2,15 +2,15 @@ from typing import Any
 from controle.gerador_id import GeradorId
 from models.partida import Partida
 from telas.movimentacao.tela_partida import TelaPartida
+from DAOs.partida_dao import PartidaDAO
 
 
 class ControladorPartida(GeradorId):
     def __init__(self, controlador_sistema: Any):
-        self.__partidas: list[Partida] = []
+        self.__partida_DAO = PartidaDAO()
         self.__controlador_sistema = controlador_sistema
         self.__tela = TelaPartida()
-
-        super().__init__(self.__partidas)
+        super().__init__(self.__partida_DAO.get_all())
 
     def inclui(self):
         navio, data_hora, destino = self.__tela.pega_dados().values()
@@ -20,7 +20,7 @@ class ControladorPartida(GeradorId):
         
         partida = Partida(self.gera_id(), navio, data_hora, destino)
         
-        self.__partidas.append(partida)
+        self.__partida_DAO.add(partida)
         self.__tela.mostra_mensagem('Partida adicionada com sucesso!')
 
     def exclui(self):
@@ -33,13 +33,13 @@ class ControladorPartida(GeradorId):
             id = self.__tela.seleciona_id()
             if id == None: return
 
-            for i in range(len(self.__partidas)):
-                partida = self.__partidas[i]
-                if partida.id == id:
-                    self.__partidas.pop(i)
-                    self.__tela.mostra_mensagem(f'Partida {partida.id} excluída com sucesso!')
-                    self.lista_resumido()
-                    return
+            partida = self.__partida_DAO.get(id)
+
+            if partida is not None:
+                self.__partida_DAO.remove(id)
+                self.__tela.mostra_mensagem(f'Partida {partida.id} excluída com sucesso!')
+                self.lista_resumido()
+                return
                     
             self.__tela.mostra_erro('Chegada não existe')
 
@@ -48,12 +48,13 @@ class ControladorPartida(GeradorId):
 
     def lista_resumido(self):
         print('\nListando partidas (resumido)...')
-
-        if len(self.__partidas) == 0:
+        partidas = self.__partida_DAO.get_all()
+        
+        if len(partidas) == 0:
             print('Nenhum item encontrado')
             return False
         
-        for partida in self.__partidas:
+        for partida in partidas:
             print(f'{partida.to_string_resumido()}')
         
         # Adiciona line break no fim. Não remover.
@@ -63,12 +64,13 @@ class ControladorPartida(GeradorId):
     
     def lista_detalhado(self):
         print('\nListando partidas (detalhado)...')
+        partidas = self.__partida_DAO.get_all()
 
-        if len(self.__partidas) == 0:
+        if len(partidas) == 0:
             print('Nenhum item encontrado')
             return False
         
-        for partida in self.__partidas:
+        for partida in partidas:
             print(f'{partida.to_string_detalhado()}\n')
         
         return True

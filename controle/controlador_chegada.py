@@ -2,14 +2,15 @@ from typing import Any
 from controle.gerador_id import GeradorId
 from models.chegada import Chegada
 from telas.movimentacao.tela_chegada import TelaChegada
+from DAOs.chegada_dao import ChegadaDAO
 
 class ControladorChegada(GeradorId):
     def __init__(self, controlador_sistema: Any):
-        self.__chegadas: list[Chegada] = []
+        self.__chegada_DAO = ChegadaDAO()
         self.__controlador_sistema = controlador_sistema
         self.__tela = TelaChegada()
 
-        super().__init__(self.__chegadas)
+        super().__init__(self.__chegada_DAO.get_all())
 
     def inclui(self):
         navio, data_hora, dias_viagem, procedencia = \
@@ -21,7 +22,7 @@ class ControladorChegada(GeradorId):
         chegada = Chegada(id=self.gera_id(), navio=navio, data_hora=data_hora, \
                           dias_viagem=dias_viagem, procedencia=procedencia)
         
-        self.__chegadas.append(chegada)
+        self.__chegada_DAO.add(chegada)
         self.__tela.mostra_mensagem('Chegada adicionada com sucesso!')
 
     def exclui(self):
@@ -34,13 +35,13 @@ class ControladorChegada(GeradorId):
             id = self.__tela.seleciona_id()
             if id == None: return
 
-            for i in range(len(self.__chegadas)):
-                chegada = self.__chegadas[i]
-                if chegada.id == id:
-                    self.__chegadas.pop(i)
-                    self.__tela.mostra_mensagem(f'Chegada {chegada.id} excluída com sucesso!')
-                    self.lista_resumido()
-                    return
+            chegada = self.__chegada_DAO.get(id)
+
+            if chegada is not None:
+                self.__chegada_DAO.remove(id) 
+                self.__tela.mostra_mensagem(f'Chegada {chegada.id} excluída com sucesso!')
+                self.lista_resumido()
+                return
                     
             self.__tela.mostra_erro('Chegada não existe')
 
@@ -49,12 +50,13 @@ class ControladorChegada(GeradorId):
 
     def lista_resumido(self):
         print('\nListando chegadas (resumido)...')
+        chegadas = self.__chegada_DAO.get_all()
 
-        if len(self.__chegadas) == 0:
+        if len(chegadas) == 0:
             print('Nenhum item encontrado')
             return False
         
-        for chegada in self.__chegadas:
+        for chegada in chegadas:
             print(f'{chegada.to_string_resumido()}')
         
         # Adiciona line break no fim. Não remover.
@@ -64,12 +66,13 @@ class ControladorChegada(GeradorId):
     
     def lista_detalhado(self):
         print('\nListando chegadas (detalhado)...')
-
-        if len(self.__chegadas) == 0:
+        chegadas = self.__chegada_DAO.get_all()
+        
+        if len(chegadas) == 0:
             print('Nenhum item encontrado')
             return False
         
-        for chegada in self.__chegadas:
+        for chegada in chegadas:
             print(f'{chegada.to_string_detalhado()}\n')
         
         return True
