@@ -1,5 +1,5 @@
 from typing import Any
-from telas.tela_utils import TelaUtils
+from tela.tela_utils import TelaUtils
 
 class TelaAdmin(TelaUtils):
     __opcoes = {1: 'Incluir', 2: 'Excluir', 3: 'Listar', 0: 'Retornar'}

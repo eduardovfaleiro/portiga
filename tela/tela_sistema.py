@@ -1,6 +1,6 @@
 
 
-from telas.tela_utils import TelaUtils
+from tela.tela_utils import TelaUtils
 
 
 class TelaSistema(TelaUtils):

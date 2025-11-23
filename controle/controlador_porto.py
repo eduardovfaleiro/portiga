@@ -1,8 +1,8 @@
 from typing import Any
 from controle.gerador_id import GeradorId
-from models.cidade import Cidade
-from models.porto import Porto
-from telas.tela_porto import TelaPorto
+from entidade.cidade import Cidade
+from entidade.porto import Porto
+from tela.tela_porto import TelaPorto
 from utils import Utils
 from DAOs.porto_dao import PortoDAO
 

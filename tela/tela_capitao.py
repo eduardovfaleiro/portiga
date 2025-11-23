@@ -1,7 +1,7 @@
 import re
 from typing import Any
-from models.capitao import Capitao
-from telas.tela_utils import TelaUtils
+from entidade.capitao import Capitao
+from tela.tela_utils import TelaUtils
 
 class TelaCapitao(TelaUtils):
     __opcoes = {1: 'Incluir', 2: 'Excluir', 3: 'Listar', 0: 'Retornar'}

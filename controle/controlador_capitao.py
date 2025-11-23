@@ -1,8 +1,8 @@
 from operator import attrgetter
 from typing import Any
 from controle.gerador_id import GeradorId
-from models.capitao import Capitao
-from telas.tela_capitao import TelaCapitao
+from entidade.capitao import Capitao
+from tela.tela_capitao import TelaCapitao
 from DAOs.capitao_dao import CapitaoDAO
 
 class ControladorCapitao(GeradorId):

@@ -1,7 +1,7 @@
 from typing import Any
 from controle.gerador_id import GeradorId
-from models.companhia import Companhia
-from telas.tela_companhia import TelaCompanhia
+from entidade.companhia import Companhia
+from tela.tela_companhia import TelaCompanhia
 from DAOs.companhia_dao import CompanhiaDAO
 
 class ControladorCompanhia(GeradorId):

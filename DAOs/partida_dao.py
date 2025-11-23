@@ -1,5 +1,5 @@
 from DAOs.dao import DAO
-from models.partida import Partida
+from entidade.partida import Partida
 
 class PartidaDAO(DAO):
     def __init__(self):

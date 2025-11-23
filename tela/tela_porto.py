@@ -1,6 +1,6 @@
 from typing import Any
-from telas.seletor_pais import SeletorPais
-from telas.tela_utils import TelaUtils
+from tela.seletor_pais import SeletorPais
+from tela.tela_utils import TelaUtils
 
 
 class TelaPorto(TelaUtils, SeletorPais):

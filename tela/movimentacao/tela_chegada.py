@@ -1,6 +1,6 @@
 from typing import Any
 
-from telas.movimentacao.tela_movimentacao import TelaMovimentacao
+from tela.movimentacao.tela_movimentacao import TelaMovimentacao
 
 class TelaChegada(TelaMovimentacao):
     __opcoes = {1: 'Incluir', 2: 'Excluir', 3: 'Listar (resumido)', 4: 'Listar (detalhado)', 0: 'Retornar'}

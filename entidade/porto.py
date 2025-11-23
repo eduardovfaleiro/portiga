@@ -1,5 +1,5 @@
-from models.cidade import Cidade
-from models.administrador import Administrador
+from entidade.cidade import Cidade
+from entidade.administrador import Administrador
 
 class Porto:
     def __init__(self, id: int, nome: str, cidade: Cidade, administrador: Administrador):

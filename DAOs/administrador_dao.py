@@ -1,5 +1,5 @@
 from DAOs.dao import DAO
-from models.administrador import Administrador
+from entidade.administrador import Administrador
 
 class AdministradorDAO(DAO):
     def __init__(self):

@@ -1,5 +1,5 @@
 from DAOs.dao import DAO
-from models.navio import Navio
+from entidade.navio import Navio
 
 class NavioDAO(DAO):
     def __init__(self):

@@ -1,8 +1,8 @@
 
 from typing import Any
-from models.companhia import Companhia
-from telas.seletor_pais import SeletorPais
-from telas.tela_utils import TelaUtils
+from entidade.companhia import Companhia
+from tela.seletor_pais import SeletorPais
+from tela.tela_utils import TelaUtils
 
 class TelaCompanhia(TelaUtils, SeletorPais):
     __opcoes = {1: 'Incluir', 2: 'Excluir', 3: 'Alterar', 4: 'Listar', 0: 'Retornar'}

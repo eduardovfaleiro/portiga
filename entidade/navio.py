@@ -1,7 +1,7 @@
-from models.pais import Pais
-from models.companhia import Companhia
-from models.capitao import Capitao
-from models.carga import Carga
+from entidade.pais import Pais
+from entidade.companhia import Companhia
+from entidade.capitao import Capitao
+from entidade.carga import Carga
 
 class Navio:
     def __init__(self, id: int, nome: str, bandeira: Pais, companhia: Companhia, capitao: Capitao, cargas: list[Carga]):

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from models.navio import Navio
+from entidade.navio import Navio
 
 class Movimentacao:
     def __init__(self, id: int, navio: Navio, data_hora: datetime):

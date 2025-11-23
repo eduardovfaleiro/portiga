@@ -1,5 +1,5 @@
 from DAOs.dao import DAO
-from models.porto import Porto
+from entidade.porto import Porto
 
 class PortoDAO(DAO):
     def __init__(self):

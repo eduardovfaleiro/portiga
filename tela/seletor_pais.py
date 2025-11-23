@@ -1,6 +1,6 @@
 import os, json
 
-from models.pais import Pais
+from entidade.pais import Pais
 
 class SeletorPais:
     __paises: dict[str, str] = {}

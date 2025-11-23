@@ -1,6 +1,6 @@
 import re
 from typing import Any
-from telas.tela_utils import TelaUtils
+from tela.tela_utils import TelaUtils
 
 
 class TelaCarga(TelaUtils):

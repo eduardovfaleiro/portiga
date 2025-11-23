@@ -1,7 +1,7 @@
 from typing import Any
 from controle.gerador_id import GeradorId
-from models.chegada import Chegada
-from telas.movimentacao.tela_chegada import TelaChegada
+from entidade.chegada import Chegada
+from tela.movimentacao.tela_chegada import TelaChegada
 from DAOs.chegada_dao import ChegadaDAO
 
 class ControladorChegada(GeradorId):
@@ -67,7 +67,7 @@ class ControladorChegada(GeradorId):
     def lista_detalhado(self):
         print('\nListando chegadas (detalhado)...')
         chegadas = self.__chegada_DAO.get_all()
-        
+
         if len(chegadas) == 0:
             print('Nenhum item encontrado')
             return False

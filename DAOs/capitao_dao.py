@@ -1,5 +1,5 @@
 from DAOs.dao import DAO
-from models.capitao import Capitao
+from entidade.capitao import Capitao
 
 class CapitaoDAO(DAO):
     def __init__(self):

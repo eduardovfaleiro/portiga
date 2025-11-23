@@ -2,9 +2,9 @@ import json
 import os
 import re
 from typing import Any
-from models.pais import Pais
-from telas.seletor_pais import SeletorPais
-from telas.tela_utils import TelaUtils
+from entidade.pais import Pais
+from tela.seletor_pais import SeletorPais
+from tela.tela_utils import TelaUtils
 
 
 class TelaNavio(TelaUtils, SeletorPais):

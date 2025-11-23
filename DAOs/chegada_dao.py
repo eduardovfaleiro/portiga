@@ -1,5 +1,5 @@
 from DAOs.dao import DAO
-from models.chegada import Chegada
+from entidade.chegada import Chegada
 
 class ChegadaDAO(DAO):
     def __init__(self):

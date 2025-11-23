@@ -1,5 +1,5 @@
 from collections import Counter
-from models.carga import Carga
+from entidade.carga import Carga
 
 class Relatorio:
     def __init__(self):

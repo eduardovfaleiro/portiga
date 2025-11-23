@@ -1,7 +1,7 @@
 from typing import Any
 from controle.gerador_id import GeradorId
-from models.partida import Partida
-from telas.movimentacao.tela_partida import TelaPartida
+from entidade.partida import Partida
+from tela.movimentacao.tela_partida import TelaPartida
 from DAOs.partida_dao import PartidaDAO
 
 
@@ -49,7 +49,7 @@ class ControladorPartida(GeradorId):
     def lista_resumido(self):
         print('\nListando partidas (resumido)...')
         partidas = self.__partida_DAO.get_all()
-        
+
         if len(partidas) == 0:
             print('Nenhum item encontrado')
             return False
