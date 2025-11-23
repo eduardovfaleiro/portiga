@@ -170,7 +170,7 @@ class ControladorNavio(GeradorId):
             cargas_do_navio.append(carga)
             navio.cargas = cargas_do_navio
             
-            self.__navio_DAO.update(navio.id, navio) 
+            self.__navio_DAO.update(navio) 
             
             self.__controlador_sistema.controlador_relatorio.registra_carregamento(carga)
 
@@ -225,7 +225,7 @@ class ControladorNavio(GeradorId):
             carga_removida = cargas.pop(idx_remover)
             navio.cargas = list(cargas)
 
-            self.__navio_DAO.update(navio.id, navio)
+            self.__navio_DAO.update(navio)
 
             self.__controlador_sistema.controlador_relatorio.registra_descarregamento(carga_removida)
 
