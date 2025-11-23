@@ -4,20 +4,14 @@ from controle.gerador_id import GeradorId
 from models.carga import Carga
 from models.navio import Navio
 from telas.tela_navio import TelaNavio
+from DAOs.navio_dao import NavioDAO
 
-class ControladorNavio:
+class ControladorNavio(GeradorId):
     def __init__(self, controlador_sistema): # type: ignore
-        self.__navios: list[Navio] = []
+        self.__navio_DAO = NavioDAO()
         self.__controlador_sistema = controlador_sistema
         self.__tela_navio = TelaNavio()
-
-    def gera_id(self) -> int:
-        if len(self.__navios) == 0:
-            return 0
-
-        ultimo_id = max(self.__navios, key=attrgetter('id')).id
-        novo_id = ultimo_id + 1
-        return novo_id
+        super().__init__(self.__navio_DAO.get_all())
 
     def inclui(self):
         dados = self.__tela_navio.pega_dados_navio()
@@ -38,15 +32,13 @@ class ControladorNavio:
             if ctrl_cap is not None and hasattr(ctrl_cap, 'pega_capitao_por_id'):
                 capitao = ctrl_cap.pega_capitao_por_id(dados['capitao'])
 
-        novo_id = self.gera_id()
+        novo_id = super().gera_id()
         navio = Navio(novo_id, dados['nome'], dados['bandeira'], companhia, capitao, [])
-        self.__navios.append(navio)
+        self.__navio_DAO.add(navio) 
         self.__tela_navio.mostra_mensagem('Navio adicionado com sucesso!')
 
     def pega_navio_por_id(self, id: int) -> Navio | None:
-        for i in range(len(self.__navios)):
-            if self.__navios[i].id == id:
-                return self.__navios[i]
+        return self.__navio_DAO.get(id)
 
     def altera(self):
         self.__tela_navio.mostra_titulo('Alterar Navio')
@@ -81,12 +73,12 @@ class ControladorNavio:
             if isinstance(novos_dados['companhia'], int) and ctrl_comp is not None and hasattr(ctrl_comp, 'pega_companhia_por_id'):
                 navio_atual.companhia = ctrl_comp.pega_companhia_por_id(novos_dados['companhia'])
 
-        # capitao (id -> instância)
         if novos_dados.get('capitao') is not None:
             ctrl_cap = getattr(self.__controlador_sistema, 'controlador_capitao', None)
             if isinstance(novos_dados['capitao'], int) and ctrl_cap is not None and hasattr(ctrl_cap, 'pega_capitao_por_id'):
                 navio_atual.capitao = ctrl_cap.pega_capitao_por_id(novos_dados['capitao'])
 
+        self.__navio_DAO.update(navio_atual.id, navio_atual)
         self.__tela_navio.mostra_mensagem(f'Navio {navio_atual.id} alterado com sucesso!')
 
     def exclui(self):
@@ -100,10 +92,11 @@ class ControladorNavio:
             id = self.__tela_navio.seleciona_navio()
             if id is None:
                 return
-
-            index = self.pega_navio_por_id(id)
-            if index is not None:
-                navio = self.__navios.pop(index)
+            
+            navio = self.pega_navio_por_id(id)
+            
+            if navio is not None:
+                self.__navio_DAO.remove(id)
                 self.__tela_navio.mostra_mensagem(f'Navio {navio.id} excluído com sucesso!')
                 self.lista()
                 return
@@ -111,39 +104,40 @@ class ControladorNavio:
             self.__tela_navio.mostra_erro('Navio não encontrado')
             
     def carrega(self):
-        self.__tela_navio.mostra_titulo('Carregar Navio')
+            self.__tela_navio.mostra_titulo('Carregar Navio')
 
-        tem_navios = self.lista()
-        if not tem_navios:
-            return
-
-        while True:
-            id = self.__tela_navio.seleciona_navio()
-            if id is None:
+            tem_navios = self.lista()
+            if not tem_navios:
                 return
 
-            index = self.pega_navio_por_id(id)
-            try:
-                navio = self.__navios[id]
-            except IndexError:
-                self.__tela_navio.mostra_erro('Navio não encontrado.')
-                continue
+            while True:
+                id_navio = self.__tela_navio.seleciona_navio()
+                if id_navio is None:
+                    return
 
-            # produto
+                navio = self.pega_navio_por_id(id_navio) 
+                
+                if navio is None:
+                    self.__tela_navio.mostra_erro('Navio não encontrado.')
+                    continue
+                else:
+                    break
+
             produto = input('Produto: ').strip()
             if produto == '':
                 self.__tela_navio.mostra_erro('Produto inválido.')
                 return
-            
-            # tipo
+                
             tipo_raw = input('Tipo: ').strip()
-            tipo = int(tipo_raw)
-            if tipo == '':
-                self.__tela_navio.mostra_erro('Tipo inválido.')
-            if tipo < 1 or tipo > 4:
-                self.__tela_navio.mostra_erro('Tipo deve ser um número entre 1 e 4.')
+            try:
+                tipo = int(tipo_raw)
+                if tipo < 1 or tipo > 4:
+                    self.__tela_navio.mostra_erro('Tipo deve ser um número entre 1 e 4.')
+                    return
+            except ValueError:
+                self.__tela_navio.mostra_erro('Tipo inválido (deve ser um número inteiro).')
+                return
 
-            # peso
             peso_raw = input('Peso (kg): ').strip()
             try:
                 peso = float(peso_raw)
@@ -151,8 +145,8 @@ class ControladorNavio:
                     raise ValueError()
             except Exception:
                 self.__tela_navio.mostra_erro('Peso inválido.')
+                return
 
-            # valor
             valor_raw = input('Valor (R$): ').strip()
             try:
                 valor = float(valor_raw)
@@ -160,33 +154,29 @@ class ControladorNavio:
                     raise ValueError()
             except Exception:
                 self.__tela_navio.mostra_erro('Valor inválido.')
+                return
 
-            # gerar id para a carga usando GeradorId sobre as cargas do próprio navio
             cargas_do_navio = getattr(navio, 'cargas', []) or []
             gerador = GeradorId(cargas_do_navio)
             novo_id = gerador.gera_id()
             novo_id_str = str(novo_id)
 
-            # criar e anexar a carga ao navio
             try:
                 carga = Carga(novo_id_str, produto, tipo, peso, valor)
             except Exception as e:
                 self.__tela_navio.mostra_erro(f'Erro ao criar carga: {e}')
                 return
 
-            # compatibilidade: expor atributo 'codigo' se algum trecho do código usar isso
-            try:
-                setattr(carga, 'codigo', carga.id)
-            except Exception:
-                pass
-
-            navio.cargas = cargas_do_navio + [carga]
-
+            cargas_do_navio.append(carga)
+            navio.cargas = cargas_do_navio
+            
+            self.__navio_DAO.update(navio.id, navio) 
+            
             self.__controlador_sistema.controlador_relatorio.registra_carregamento(carga)
 
             self.__tela_navio.mostra_mensagem(f'Carga {carga.id} adicionada com sucesso!')
             self.lista()
-        
+
     def descarrega(self):
         self.__tela_navio.mostra_titulo('Descarregar Navio')
 
@@ -199,18 +189,16 @@ class ControladorNavio:
             if id is None:
                 return
 
-            index = self.pega_navio_por_id(id)
-            if index is None:
+            navio = self.pega_navio_por_id(id)
+            if navio is None:
                 self.__tela_navio.mostra_erro('Navio não existe para o id informado.')
                 continue
-            navio = self.__navios[id]
-
+            
             cargas = getattr(navio, 'cargas', []) or []
             if len(cargas) == 0:
                 self.__tela_navio.mostra_erro('Este navio não possui cargas para descarregar.')
                 return
 
-            # listar cargas embarcadas
             print('\nCargas embarcadas:')
             for c in cargas:
                 cid = getattr(c, 'id', None) or getattr(c, 'codigo', '')
@@ -220,12 +208,10 @@ class ControladorNavio:
                 cvalor = getattr(c, 'valor', '')
                 print(f'- {cid} | {cproduto} | {ctipo} | {cpeso} kg | R$ {cvalor}')
 
-            # solicitar código/id da carga a remover via tela
             codigo = self.__tela_navio.seleciona_carga()
             if codigo is None:
                 return
 
-            # localizar carga no navio
             idx_remover = None
             for i, c in enumerate(cargas):
                 if str(getattr(c, 'id', '')) == codigo or str(getattr(c, 'codigo', '')) == codigo:
@@ -239,6 +225,8 @@ class ControladorNavio:
             carga_removida = cargas.pop(idx_remover)
             navio.cargas = list(cargas)
 
+            self.__navio_DAO.update(navio.id, navio)
+
             self.__controlador_sistema.controlador_relatorio.registra_descarregamento(carga_removida)
 
             self.__tela_navio.mostra_mensagem(f'Carga {getattr(carga_removida, "id", "")} removida com sucesso!')
@@ -246,12 +234,12 @@ class ControladorNavio:
 
     def lista(self) -> bool:
         print('\nListando navios...')
-
-        if len(self.__navios) == 0:
+        navios = self.__navio_DAO.get_all()
+        if len(navios) == 0:
             print('Nenhum navio encontrado')
             return False
 
-        for navio in self.__navios:
+        for navio in navios:
             self.__tela_navio.mostra_navio(navio)
 
         return True
