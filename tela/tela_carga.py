@@ -1,7 +1,8 @@
 import re
 from typing import Any
-from telas.tela_utils import TelaUtils
+from tela.tela_utils import TelaUtils
 import FreeSimpleGUI as sg
+
 
 class TelaCarga(TelaUtils):
     def __init__(self):

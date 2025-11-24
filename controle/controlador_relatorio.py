@@ -1,6 +1,6 @@
 from typing import Any
-from models.relatorio import Relatorio
-from telas.tela_relatorio import TelaRelatorio
+from entidade.relatorio import Relatorio
+from tela.tela_relatorio import TelaRelatorio
 
 class ControladorRelatorio:
     def __init__(self, controlador_sistema: Any):

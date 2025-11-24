@@ -1,8 +1,8 @@
 
 from typing import Any
-from models.companhia import Companhia
-from telas.seletor_pais import SeletorPais
-from telas.tela_utils import TelaUtils
+from entidade.companhia import Companhia
+from tela.seletor_pais import SeletorPais
+from tela.tela_utils import TelaUtils
 import FreeSimpleGUI as sg
 
 class TelaCompanhia(TelaUtils, SeletorPais):

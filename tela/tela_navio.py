@@ -2,10 +2,11 @@ import json
 import os
 import re
 from typing import Any
-from models.pais import Pais
-from telas.seletor_pais import SeletorPais
-from telas.tela_utils import TelaUtils
+from entidade.pais import Pais
+from tela.seletor_pais import SeletorPais
+from tela.tela_utils import TelaUtils
 import FreeSimpleGUI as sg
+
 
 class TelaNavio(TelaUtils, SeletorPais):
     def abre_opcoes(self) -> int:

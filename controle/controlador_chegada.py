@@ -1,28 +1,31 @@
 from typing import Any
 from controle.gerador_id import GeradorId
-from models.chegada import Chegada
-from telas.movimentacao.tela_chegada import TelaChegada
-import FreeSimpleGUI as sg
+from entidade.chegada import Chegada
+from tela.movimentacao.tela_chegada import TelaChegada
+from DAOs.chegada_dao import ChegadaDAO
 
 class ControladorChegada(GeradorId):
     def __init__(self, controlador_sistema: Any):
-        self.__chegadas: list[Chegada] = []
+        self.__chegada_DAO = ChegadaDAO()
         self.__controlador_sistema = controlador_sistema
         self.__tela = TelaChegada()
 
-        super().__init__(self.__chegadas)
+        super().__init__(self.__chegada_DAO.get_all())
 
     def inclui(self):
         navio, data_hora, dias_viagem, procedencia = \
             self.__tela.pega_dados().values()
         
         navio = self.__controlador_sistema.controlador_navio.pega_navio_por_id(navio)
+        if navio is None:
+            self.__tela.mostra_mensagem('ERRO: Navio não encontrado')
+            return
         procedencia = self.__controlador_sistema.controlador_porto.pega_porto_por_id(procedencia)
 
         chegada = Chegada(id=self.gera_id(), navio=navio, data_hora=data_hora, \
                           dias_viagem=dias_viagem, procedencia=procedencia)
         
-        self.__chegadas.append(chegada)
+        self.__chegada_DAO.add(chegada)
         self.__tela.mostra_mensagem('Chegada adicionada com sucesso!')
 
     def exclui(self):
@@ -35,13 +38,13 @@ class ControladorChegada(GeradorId):
             id = self.__tela.seleciona_id()
             if id == None: return
 
-            for i in range(len(self.__chegadas)):
-                chegada = self.__chegadas[i]
-                if chegada.id == id:
-                    self.__chegadas.pop(i)
-                    self.__tela.mostra_mensagem(f'Chegada {chegada.id} excluída com sucesso!')
-                    self.lista_resumido()
-                    return
+            chegada = self.__chegada_DAO.get(id)
+
+            if chegada is not None:
+                self.__chegada_DAO.remove(id) 
+                self.__tela.mostra_mensagem(f'Chegada {chegada.id} excluída com sucesso!')
+                self.lista_resumido()
+                return
                     
             self.__tela.mostra_erro('Chegada não existe')
 

@@ -82,4 +82,4 @@ class TelaUtils(Utils):
             if digito_str.isdigit():
                 return int(digito_str)
                 
-            self.mostra_erro('Código do navio só pode ser composto por dígitos')
+            self.mostra_erro('Código só pode ser composto por dígitos')

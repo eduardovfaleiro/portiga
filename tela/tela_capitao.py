@@ -1,7 +1,7 @@
 import re
 from typing import Any
-from models.capitao import Capitao
-from telas.tela_utils import TelaUtils
+from entidade.capitao import Capitao
+from tela.tela_utils import TelaUtils
 import FreeSimpleGUI as sg
 
 class TelaCapitao(TelaUtils):

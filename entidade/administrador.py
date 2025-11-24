@@ -1,4 +1,4 @@
-from models.pessoa import Pessoa
+from entidade.pessoa import Pessoa
 
 class Administrador(Pessoa):
     def __init__(self, id: int, nome: str, telefone: int):

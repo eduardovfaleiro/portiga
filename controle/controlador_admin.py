@@ -1,7 +1,7 @@
 from typing import Any
 from controle.gerador_id import GeradorId
-from models.administrador import Administrador
-from telas.tela_admin import TelaAdmin
+from entidade.administrador import Administrador
+from tela.tela_admin import TelaAdmin
 from DAOs.administrador_dao import AdministradorDAO
 import FreeSimpleGUI as sg
 

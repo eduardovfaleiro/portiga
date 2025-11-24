@@ -1,5 +1,5 @@
 from DAOs.dao import DAO
-from models.companhia import Companhia
+from entidade.companhia import Companhia
 
 class CompanhiaDAO(DAO):
     def __init__(self):

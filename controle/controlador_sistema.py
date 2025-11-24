@@ -6,9 +6,8 @@ from controle.controlador_navio import ControladorNavio
 from controle.controlador_partida import ControladorPartida
 from controle.controlador_porto import ControladorPorto
 from controle.controlador_relatorio import ControladorRelatorio
-from telas.tela_sistema import TelaSistema
+from tela.tela_sistema import TelaSistema
 import FreeSimpleGUI as sg
-
 
 class ControladorSistema:
     def __init__(self):

@@ -1,6 +1,7 @@
 from typing import Any
-from telas.seletor_pais import SeletorPais
-from telas.tela_utils import TelaUtils
+from tela.seletor_pais import SeletorPais
+from tela.tela_utils import TelaUtils
+
 import FreeSimpleGUI as sg
 
 class TelaPorto(TelaUtils, SeletorPais):

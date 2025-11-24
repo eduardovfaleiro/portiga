@@ -1,9 +1,9 @@
 from operator import attrgetter
 from typing import Any
 from controle.gerador_id import GeradorId
-from models.carga import Carga
-from models.navio import Navio
-from telas.tela_navio import TelaNavio
+from entidade.carga import Carga
+from entidade.navio import Navio
+from tela.tela_navio import TelaNavio
 from DAOs.navio_dao import NavioDAO
 import FreeSimpleGUI as sg
 

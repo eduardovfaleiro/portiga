@@ -1,18 +1,18 @@
 from typing import Any
 from controle.gerador_id import GeradorId
-from models.cidade import Cidade
-from models.porto import Porto
-from telas.tela_porto import TelaPorto
+from entidade.cidade import Cidade
+from entidade.porto import Porto
+from tela.tela_porto import TelaPorto
 from utils import Utils
+from DAOs.porto_dao import PortoDAO
 
 
 class ControladorPorto(GeradorId, Utils):
     def __init__(self, controlador_sistema: Any):
-        self.__portos: list[Porto] = []
+        self.__porto_DAO = PortoDAO()
         self.__controlador_sistema = controlador_sistema
         self.__tela = TelaPorto()
-
-        super().__init__(self.__portos)
+        super().__init__(self.__porto_DAO.get_all())
     
     def inclui(self):
         nome, cidade, pais, id_administrador = self.__tela.pega_dados().values()
@@ -20,7 +20,7 @@ class ControladorPorto(GeradorId, Utils):
         administrador = self.__controlador_sistema.controlador_admin.pega_por_id(id_administrador)
 
         porto = Porto(id=self.gera_id(), nome=nome, cidade=Cidade(cidade, pais), administrador=administrador)
-        self.__portos.append(porto)
+        self.__porto_DAO.add(porto)
         self.__tela.mostra_mensagem('Porto adicionado com sucesso!')
 
     def abre_tela(self):
@@ -32,11 +32,7 @@ class ControladorPorto(GeradorId, Utils):
             opcoes[self.__tela.abre_opcoes()]()
 
     def pega_porto_por_id(self, id: int):
-        for i in range(len(self.__portos)):
-            if self.__portos[i].id == id:
-                return self.__portos[i]
-            
-        return None
+        return self.__porto_DAO.get(id)
 
     def lista(self) -> bool:
         # A mensagem de "Listando..." é implícita ao abrir a janela de listagem
@@ -60,16 +56,16 @@ class ControladorPorto(GeradorId, Utils):
 
         while True:
             id = self.__tela.seleciona_id()
-            if id == None: return
+            if id is None: return
 
-            for i in range(len(self.__portos)):
-                porto = self.__portos[i]
-                if porto.id == id:
-                    self.__portos.pop(i)
-                    self.__tela.mostra_mensagem(f'Porto {porto.id} excluída com sucesso!')
-                    self.lista()
-                    return
-                    
+            porto = self.pega_porto_por_id(id)
+
+            if porto is not None:
+                self.__porto_DAO.remove(id)
+                self.__tela.mostra_mensagem(f'Porto {porto.id} excluído com sucesso!')
+                self.lista()
+                return
+                
             self.__tela.mostra_erro('Porto não existe')
 
     def altera(self):
@@ -103,6 +99,7 @@ class ControladorPorto(GeradorId, Utils):
             administrador = self.__controlador_sistema.controlador_admin.pega_por_id(id_administrador)
             porto_atual.administrador = administrador
 
+        self.__porto_DAO.update(porto_atual)
         self.__tela.mostra_mensagem(f'Porto {porto_atual.id} alterado com sucesso!')
 
     def retorna(self):

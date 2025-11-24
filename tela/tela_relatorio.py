@@ -1,5 +1,5 @@
-from models.carga import Carga
-from telas.tela_utils import TelaUtils
+from entidade.carga import Carga
+from tela.tela_utils import TelaUtils
 import FreeSimpleGUI as sg
 
 class TelaRelatorio(TelaUtils):

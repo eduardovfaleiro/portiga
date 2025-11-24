@@ -1,6 +1,6 @@
 from datetime import datetime
-from models.navio import Navio
-from telas.tela_utils import TelaUtils
+from entidade.navio import Navio
+from tela.tela_utils import TelaUtils
 
 
 import FreeSimpleGUI as sg

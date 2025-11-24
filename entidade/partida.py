@@ -1,7 +1,7 @@
 from datetime import date, datetime
-from models.movimentacao import Movimentacao
-from models.navio import Navio
-from models.porto import Porto
+from entidade.movimentacao import Movimentacao
+from entidade.navio import Navio
+from entidade.porto import Porto
 
 class Partida(Movimentacao):
     def __init__(self, id: int, navio: Navio, data_hora: datetime, destino: Porto):

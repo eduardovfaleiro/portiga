@@ -1,5 +1,5 @@
 from typing import Any
-from telas.movimentacao.tela_movimentacao import TelaMovimentacao
+from tela.movimentacao.tela_movimentacao import TelaMovimentacao
 import FreeSimpleGUI as sg
 
 class TelaPartida(TelaMovimentacao):

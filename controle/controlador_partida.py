@@ -1,16 +1,16 @@
 from typing import Any
 from controle.gerador_id import GeradorId
-from models.partida import Partida
-from telas.movimentacao.tela_partida import TelaPartida
+from entidade.partida import Partida
+from tela.movimentacao.tela_partida import TelaPartida
+from DAOs.partida_dao import PartidaDAO
 
 
 class ControladorPartida(GeradorId):
     def __init__(self, controlador_sistema: Any):
-        self.__partidas: list[Partida] = []
+        self.__partida_DAO = PartidaDAO()
         self.__controlador_sistema = controlador_sistema
         self.__tela = TelaPartida()
-
-        super().__init__(self.__partidas)
+        super().__init__(self.__partida_DAO.get_all())
 
     def inclui(self):
         dados = self.__tela.pega_dados()
@@ -19,11 +19,14 @@ class ControladorPartida(GeradorId):
         navio, data_hora, destino = dados.values()
         
         navio = self.__controlador_sistema.controlador_navio.pega_navio_por_id(navio)
+        if navio is None:
+            self.__tela.mostra_erro('Navio não encontrado')
+            return
         destino = self.__controlador_sistema.controlador_porto.pega_porto_por_id(destino)
-        
+
         partida = Partida(self.gera_id(), navio, data_hora, destino)
         
-        self.__partidas.append(partida)
+        self.__partida_DAO.add(partida)
         self.__tela.mostra_mensagem('Partida adicionada com sucesso!')
 
     def exclui(self):
@@ -36,13 +39,13 @@ class ControladorPartida(GeradorId):
             id = self.__tela.seleciona_id()
             if id == None: return
 
-            for i in range(len(self.__partidas)):
-                partida = self.__partidas[i]
-                if partida.id == id:
-                    self.__partidas.pop(i)
-                    self.__tela.mostra_mensagem(f'Partida {partida.id} excluída com sucesso!')
-                    self.lista_resumido()
-                    return
+            partida = self.__partida_DAO.get(id)
+
+            if partida is not None:
+                self.__partida_DAO.remove(id)
+                self.__tela.mostra_mensagem(f'Partida {partida.id} excluída com sucesso!')
+                self.lista_resumido()
+                return
                     
             self.__tela.mostra_erro('Partida não existe')
 

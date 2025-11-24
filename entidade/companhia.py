@@ -1,4 +1,4 @@
-from models.pais import Pais
+from entidade.pais import Pais
 
 class Companhia:
     def __init__(self, id: int, nome: str, pais_sede: Pais):
