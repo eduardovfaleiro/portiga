@@ -53,23 +53,13 @@ class ControladorPartida(GeradorId):
         self.__controlador_sistema.abre_tela()
 
     def lista_resumido(self):
-        partidas = self.__partidas
-
-        if len(partidas) == 0:
-            self.__tela.mostra_mensagem('Nenhum item encontrado') 
-            return False
-        
+        partidas = self.__partida_DAO.get_all()
         self.__tela.mostra_lista_resumido(partidas)
-
-        return True
-    
-    def lista_detalhado(self):
-        partidas = self.__partidas
-
-        if len(partidas) == 0:
-            self.__tela.mostra_mensagem('Nenhum item encontrado')
-            return False
         
+        return True
+
+    def lista_detalhado(self):
+        partidas = self.__partida_DAO.get_all()
         self.__tela.mostra_lista_detalhado(partidas)
         
         return True
