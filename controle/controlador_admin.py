@@ -3,6 +3,7 @@ from controle.gerador_id import GeradorId
 from models.administrador import Administrador
 from telas.tela_admin import TelaAdmin
 from DAOs.administrador_dao import AdministradorDAO
+import FreeSimpleGUI as sg
 
 class ControladorAdmin(GeradorId):
     def __init__(self, controlador_sistema):  # type: ignore
@@ -10,6 +11,10 @@ class ControladorAdmin(GeradorId):
         self.__controlador_sistema = controlador_sistema
         self.__tela = TelaAdmin()
         super().__init__(self.__administrador_DAO.get_all())
+
+    def pega_por_id(self, id: int):
+        return self.__administrador_DAO.get(id)
+
 
     def inclui(self):
         dados = self.__tela.pega_dados()
@@ -21,35 +26,65 @@ class ControladorAdmin(GeradorId):
         self.__tela.mostra_mensagem('Administrador adicionado com sucesso!')
 
     def exclui(self):
-        self.__tela.mostra_titulo('Excluir Administrador')
-
-        if not self.lista():
+        has_admin = self.lista()
+        
+        if not has_admin:
             return
 
+        # 2. Abre a janelinha pedindo o ID (implementada acima)
         administrador_id = self.__tela.seleciona_id()
+        
         if administrador_id is None:
-            return
+            return # Usuário clicou em cancelar ou fechou a janela
 
+        # 3. Busca no banco de dados (DAO)
         administrador = self.__administrador_DAO.get(administrador_id)
 
         if administrador is None:
-            self.__tela.mostra_erro('Administrador não encontrado')
+            self.__tela.mostra_erro('Administrador não encontrado para o ID informado.')
             return
         
+        # 4. Remove e dá feedback
         self.__administrador_DAO.remove(administrador_id)
-        self.__tela.mostra_mensagem(f'Administrador {administrador.nome} (ID: {administrador.id}) removido com sucesso!')
+        self.__tela.mostra_mensagem(f'Administrador {administrador.nome} removido com sucesso!')
+        
+        # 5. Lista novamente para confirmar visualmente a exclusão
         self.lista()
 
     def lista(self) -> bool:
-        print('\nListando administradores...')
+    # 1. Busca os dados (mantém sua lógica original)
         administradores = self.__administrador_DAO.get_all()
 
         if len(administradores) == 0:
-            print('Nenhum administrador encontrado')
+            sg.popup('Nenhum administrador encontrado.')
             return False
 
+        # 2. Transforma Objetos em Lista de Listas para o FreeSimpleGUI
+        # Assumindo que seu objeto Admin tem .nome e .telefone
+        # Se não tiver atributos diretos, ajuste para admin.id, etc.
+        dados_tabela = []
         for admin in administradores:
-            print(f'{admin}\n')
+            # Cria uma linha com as colunas que você quer mostrar
+            dados_tabela.append([admin.id, admin.nome, admin.telefone])
+
+        # 3. Define o Layout com a Tabela
+        layout = [
+            [sg.Text('Lista de Administradores', font=('Helvetica', 15))],
+            [sg.Table(values=dados_tabela,
+                      headings=['ID', 'Nome', 'Telefone'], # Cabeçalhos das colunas
+                      auto_size_columns=True,
+                      display_row_numbers=False,
+                      justification='left',
+                      num_rows=min(25, len(dados_tabela)), # Altura dinâmica
+                      key='-TABELA-',
+                      row_height=35)],
+            [sg.Button('Fechar')]
+        ]
+
+        # 4. Abre a janela
+        window = sg.Window('Listagem', layout)
+        window.read()
+        window.close()
 
         return True
 
