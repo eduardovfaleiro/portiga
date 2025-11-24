@@ -18,7 +18,7 @@ class TelaNavio(TelaUtils, SeletorPais):
             
             [sg.HorizontalSeparator(pad=(0, 10))],
             
-            [sg.Button('Carregar Carga', key=5, size=(15, 1)), sg.Button('Descarregar', key=6, size=(15, 1))],
+            [sg.Button('Carregar', key=5, size=(15, 1)), sg.Button('Descarregar', key=6, size=(15, 1))],
             
             [sg.Button('Retornar', key=0, button_color=('white', 'firebrick3'), pad=(0, 20))]
         ]
