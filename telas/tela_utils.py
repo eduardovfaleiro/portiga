@@ -3,11 +3,11 @@ import re
 
 from utils import Utils
 from valor_vazio_exception import ValorVazioException
-
+import FreeSimpleGUI as sg
 
 class TelaUtils(Utils):
     def mostra_erro(self, mensagem: str):
-        print(f'ERRO: {mensagem}')
+        sg.popup_error('Erro', mensagem)
 
     def mostra_titulo(self, titulo: str):
         LARGURA_TOTAL = 50
@@ -39,24 +39,31 @@ class TelaUtils(Utils):
                 self.mostra_erro(erro_mensagem)
     
     def mostra_mensagem(self, mensagem: str):
-        print(mensagem)
+        sg.popup_ok('Sucesso', mensagem)
 
     def seleciona_id(self) -> int | None:
-        pattern = r'^\d+$'
+        layout = [
+            [sg.Text('Digite o código que deseja selecionar:', font=('Helvetica', 12))],
+            [sg.Input(key='id', size=(20, 1))],
+            [sg.Button('Confirmar'), sg.Button('Cancelar')]
+        ]
+
+        window = sg.Window('Selecionar código', layout, element_justification='c')
 
         while True:
-            user_input = input("Código que deseja selecionar (\"sair\" para cancelar): ")
-            if user_input == 'sair':
+            event, values = window.read()
+
+            if event in (sg.WIN_CLOSED, 'Cancelar'):
+                window.close()
                 return None
 
-            has_only_digits = re.match(pattern, user_input) != None
-            if has_only_digits:
-                break
-            else:
-                self.mostra_erro('Código só pode ser composto por dígitos')
+            id_str = values['id'].strip()
 
-        id = int(user_input)
-        return id
+            if id_str.isdigit():
+                window.close()
+                return int(id_str)
+            
+            sg.popup_error('O código deve ser um número inteiro válido.')
     
     def pega_str(self, mensagem_input: str, mensagem_erro: str) -> str:
         while True:
