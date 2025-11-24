@@ -1,22 +1,73 @@
 from typing import Any
 
 from telas.movimentacao.tela_movimentacao import TelaMovimentacao
+import FreeSimpleGUI as sg
 
 class TelaChegada(TelaMovimentacao):
-    __opcoes = {1: 'Incluir', 2: 'Excluir', 3: 'Listar (resumido)', 4: 'Listar (detalhado)', 0: 'Retornar'}
+    def abre_opcoes(self) -> int:
+        layout = [
+            [sg.Text('Menu Chegadas', font=('Helvetica', 20), justification='center', expand_x=True)],
+            [sg.Button('Incluir', key=1, size=(20, 1)), sg.Button('Excluir', key=2, size=(20, 1))],
+            [sg.Button('Listar (Resumido)', key=3, size=(20, 1)), sg.Button('Listar (Detalhado)', key=4, size=(20, 1))],
+            [sg.HorizontalSeparator(pad=(0, 10))],
+            [sg.Button('Retornar', key=0, button_color=('white', 'firebrick3'))]
+        ]
 
-    def pega_dados(self) -> dict[str, Any]:
-        self.mostra_titulo('Dados Chegada')
-        
-        navio = self.pega_digito('Navio: ', 'Código do navio só pode ser composto por dígitos')
-        data_hora = self.pega_data_hora()
-        dias_viagem = self.pega_digito('Dias de viagem: ', 'Dias de viagem só pode ser composto por dígitos')
-        procedencia = self.pega_digito('Procedência: ', 'Procedência (código do porto) só pode ser composto por dígitos')
+        window = sg.Window('Chegadas', layout, element_justification='c')
+        event, _ = window.read()
+        window.close()
 
-        return {'navio': navio, 'data_hora': data_hora, 'dias_viagem': dias_viagem, \
-                'procedencia': procedencia}
+        if event in (sg.WIN_CLOSED, None):
+            return 0
+        return int(event)
 
-    def abre_opcoes(self):
-        self.mostra_titulo('Chegadas')
-        self.mostra_opcoes(self.__opcoes)
-        return self.recebe_opcao(self.__opcoes)
+    def pega_dados(self) -> dict[str, Any] | None:
+        layout = [
+            [sg.Text('Dados da Chegada', font=('Helvetica', 15), pad=(0,10))],
+            
+            [sg.Text('ID do Navio:', size=(15, 1)), sg.Input(key='navio')],
+            
+            # Campo de Data com dica visual
+            [sg.Text('Data/Hora:', size=(15, 1)), sg.Input(key='data_hora'), 
+             sg.Text('(dd/mm/aa hh:mm ou vazio p/ agora)', font=('Helvetica', 8))],
+            
+            [sg.Text('Dias de Viagem:', size=(15, 1)), sg.Input(key='dias_viagem')],
+            [sg.Text('ID Procedência:', size=(15, 1)), sg.Input(key='procedencia')],
+            
+            [sg.Button('Confirmar', pad=(0, 15)), sg.Button('Cancelar', pad=(0, 15))]
+        ]
+
+        window = sg.Window('Cadastrar Chegada', layout)
+
+        while True:
+            event, values = window.read()
+
+            if event in (sg.WIN_CLOSED, 'Cancelar'):
+                window.close()
+                return None
+
+            # --- Validação ---
+            navio_str = values['navio']
+            data_str = values['data_hora']
+            dias_str = values['dias_viagem']
+            procedencia_str = values['procedencia']
+
+            # 1. Valida Inteiros
+            if not (navio_str.isdigit() and dias_str.isdigit() and procedencia_str.isdigit()):
+                sg.popup_error('Navio, Dias e Procedência devem ser números inteiros.')
+                continue
+
+            # 2. Valida Data (usando o método da classe pai)
+            data_validada = self.valida_converte_data(data_str)
+            if data_validada is None:
+                sg.popup_error('Data inválida! Use o formato dd/MM/yy hh:mm')
+                continue
+
+            # Se tudo estiver OK
+            window.close()
+            return {
+                'navio': int(navio_str),
+                'data_hora': data_validada,
+                'dias_viagem': int(dias_str),
+                'procedencia': int(procedencia_str)
+            }
