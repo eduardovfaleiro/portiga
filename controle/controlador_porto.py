@@ -15,8 +15,11 @@ class ControladorPorto(GeradorId, Utils):
         super().__init__(self.__portos)
     
     def inclui(self):
-        nome, cidade, pais = self.__tela.pega_dados().values()
-        porto = Porto(id=self.gera_id(), nome=nome, cidade=Cidade(cidade, pais), administrador=None)
+        nome, cidade, pais, id_administrador = self.__tela.pega_dados().values()
+
+        administrador = self.__controlador_sistema.controlador_admin.pega_por_id(id_administrador)
+
+        porto = Porto(id=self.gera_id(), nome=nome, cidade=Cidade(cidade, pais), administrador=administrador)
         self.__portos.append(porto)
         self.__tela.mostra_mensagem('Porto adicionado com sucesso!')
 
@@ -35,15 +38,17 @@ class ControladorPorto(GeradorId, Utils):
             
         return None
 
-    def lista(self):
-        print('\nListando portos...')
+    def lista(self) -> bool:
+        # A mensagem de "Listando..." é implícita ao abrir a janela de listagem
 
         if len(self.__portos) == 0:
-            print('Nenhum porto encontrado')
+            # Em GUI, mostramos o erro/aviso em um popup
+            self.__tela.mostra_erro('Nenhum porto encontrado')
             return False
         
-        for porto in self.__portos:
-            self.__tela.mostra_mensagem(f'{porto.__str__()}\n')
+        # Em vez de um loop de prints ou popups individuais,
+        # passamos a lista completa para a tela montar a tabela.
+        self.__tela.mostra_lista_portos(self.__portos)
         
         return True
 
@@ -83,7 +88,7 @@ class ControladorPorto(GeradorId, Utils):
             else:
                 break
         
-        nome, cidade, pais, administrador = self.__tela.pega_dados_opcionais().values()
+        nome, cidade, pais, id_administrador = self.__tela.pega_dados_opcionais().values()
         
         if not self.valor_eh_vazio(nome):
             porto_atual.nome = nome
@@ -94,7 +99,8 @@ class ControladorPorto(GeradorId, Utils):
         if pais != None:
             porto_atual.cidade.pais = pais
 
-        if administrador != None:
+        if id_administrador != None:
+            administrador = self.__controlador_sistema.controlador_admin.pega_por_id(id_administrador)
             porto_atual.administrador = administrador
 
         self.__tela.mostra_mensagem(f'Porto {porto_atual.id} alterado com sucesso!')
