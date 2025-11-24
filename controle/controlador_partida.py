@@ -13,7 +13,10 @@ class ControladorPartida(GeradorId):
         super().__init__(self.__partidas)
 
     def inclui(self):
-        navio, data_hora, destino = self.__tela.pega_dados().values()
+        dados = self.__tela.pega_dados()
+        if dados is None: return
+
+        navio, data_hora, destino = dados.values()
         
         navio = self.__controlador_sistema.controlador_navio.pega_navio_por_id(navio)
         destino = self.__controlador_sistema.controlador_porto.pega_porto_por_id(destino)
@@ -41,35 +44,33 @@ class ControladorPartida(GeradorId):
                     self.lista_resumido()
                     return
                     
-            self.__tela.mostra_erro('Chegada não existe')
+            self.__tela.mostra_erro('Partida não existe')
 
     def retorna(self):
         self.__controlador_sistema.abre_tela()
 
     def lista_resumido(self):
-        print('\nListando partidas (resumido)...')
+        partidas = self.__partidas
 
-        if len(self.__partidas) == 0:
-            print('Nenhum item encontrado')
+        if len(partidas) == 0:
+            # Chama o popup de erro da tela
+            self.__tela.mostra_mensagem('Nenhum item encontrado') 
             return False
         
-        for partida in self.__partidas:
-            print(f'{partida.to_string_resumido()}')
-        
-        # Adiciona line break no fim. Não remover.
-        print()
+        # O controlador delega a tarefa de exibição à tela, passando os dados
+        self.__tela.mostra_lista_resumido(partidas)
 
         return True
     
     def lista_detalhado(self):
-        print('\nListando partidas (detalhado)...')
+        partidas = self.__partidas
 
-        if len(self.__partidas) == 0:
-            print('Nenhum item encontrado')
+        if len(partidas) == 0:
+            self.__tela.mostra_mensagem('Nenhum item encontrado')
             return False
         
-        for partida in self.__partidas:
-            print(f'{partida.to_string_detalhado()}\n')
+        # O controlador delega a tarefa de exibição à tela, passando os dados
+        self.__tela.mostra_lista_detalhado(partidas)
         
         return True
 
