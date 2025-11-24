@@ -19,7 +19,7 @@ class ControladorChegada(GeradorId):
         
         navio = self.__controlador_sistema.controlador_navio.pega_navio_por_id(navio)
         if navio is None:
-            self.__tela.mostra_mensagem('ERRO: Navio não encontrado')
+            self.__tela.mostra_erro('Navio não encontrado')
             return
         procedencia = self.__controlador_sistema.controlador_porto.pega_porto_por_id(procedencia)
 
@@ -54,13 +54,14 @@ class ControladorChegada(GeradorId):
 
     def lista_resumido(self):
             # Verifica se tem itens
-            if len(self.__chegadas) == 0:
+            chegadas = self.__chegada_DAO.get_all()
+            if len(chegadas) == 0:
                 sg.popup('Nenhum item encontrado')
                 return False
             
             # Prepara os dados: Transforma cada objeto em uma lista com uma string única
             # Se to_string_resumido() retorna "ID: 1 - Navio: X", isso será uma linha da tabela
-            dados_tabela = [[chegada.to_string_resumido()] for chegada in self.__chegadas]
+            dados_tabela = [[chegada.to_string_resumido()] for chegada in chegadas]
 
             layout = [
                 [sg.Text('Chegadas (Resumido)', font=('Helvetica', 15))],
@@ -82,13 +83,14 @@ class ControladorChegada(GeradorId):
     
     def lista_detalhado(self):
         # Verifica se tem itens
-        if len(self.__chegadas) == 0:
+        chegadas = self.__chegada_DAO.get_all()
+        if len(chegadas) == 0:
             sg.popup('Nenhum item encontrado')
             return False
         
         # Para o detalhado, concatenamos tudo em um textão gigante
         texto_completo = ""
-        for chegada in self.__chegadas:
+        for chegada in chegadas:
             texto_completo += f"{chegada.to_string_detalhado()}\n"
             texto_completo += "-" * 50 + "\n" # Adiciona uma linha separadora visual
 
