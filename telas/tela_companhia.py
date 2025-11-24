@@ -3,54 +3,154 @@ from typing import Any
 from models.companhia import Companhia
 from telas.seletor_pais import SeletorPais
 from telas.tela_utils import TelaUtils
+import FreeSimpleGUI as sg
 
 class TelaCompanhia(TelaUtils, SeletorPais):
-    __opcoes = {1: 'Incluir', 2: 'Excluir', 3: 'Alterar', 4: 'Listar', 0: 'Retornar'}
+    def abre_opcoes(self) -> int:
+        layout = [
+            [sg.Text('Gerenciar Companhias', font=('Helvetica', 20), justification='center', expand_x=True)],
+            
+            [sg.Button('Incluir', key=1, size=(15, 1)), sg.Button('Excluir', key=2, size=(15, 1))],
+            [sg.Button('Alterar', key=3, size=(15, 1)), sg.Button('Listar', key=4, size=(15, 1))],
+            
+            [sg.HorizontalSeparator(pad=(0, 10))],
+            
+            [sg.Button('Retornar', key=0, button_color=('white', 'firebrick3'), pad=(0, 20))]
+        ]
 
-    def abre_opcoes(self):
-        self.mostra_titulo('Companhias')
-        self.mostra_opcoes(self.__opcoes)
-        return self.recebe_opcao(self.__opcoes)
+        window = sg.Window('Companhias', layout, element_justification='c')
+        event, _ = window.read()
+        window.close()
 
-    def pega_dados_companhia(self) -> dict[str, Any]:
-        self.mostra_titulo('Dados Companhia')
+        if event in (sg.WIN_CLOSED, None):
+            return 0
+        return int(event)
+
+    def pega_dados_companhia(self) -> dict[str, Any] | None:
+        layout = [
+            [sg.Text('Nova Companhia', font=('Helvetica', 14))],
+            [sg.Text('Nome:', size=(15, 1)), sg.Input(key='nome')],
+            [sg.Text('País Sede (ISO):', size=(15, 1)), sg.Input(key='pais'), sg.Text('(Ex: BRA, USA)')],
+            [sg.Button('Confirmar'), sg.Button('Cancelar')]
+        ]
+
+        window = sg.Window('Cadastro de Companhia', layout)
+
+        while True:
+            event, values = window.read()
+
+            if event in (sg.WIN_CLOSED, 'Cancelar'):
+                window.close()
+                return None
+
+            nome = values['nome'].strip()
+            codigo_pais = values['pais'].strip().upper()
+
+            # --- Validações ---
+            if not nome:
+                sg.popup_error('O Nome da companhia é obrigatório.')
+                continue
+            
+            # Usa o método herdado de SeletorPais
+            pais_obj = self.retorna_pais(codigo_pais)
+            if pais_obj is None:
+                sg.popup_error('Código de país ISO 3166 não encontrado.')
+                continue
+
+            window.close()
+            return {"nome": nome, "pais_sede": pais_obj}
+    
+    def pega_dados_opcionais_companhia(self) -> dict[str, Any] | None:
+        layout = [
+            [sg.Text('Alterar Companhia (Deixe vazio para manter)', font=('Helvetica', 12))],
+            [sg.Text('Novo Nome:', size=(15, 1)), sg.Input(key='nome')],
+            [sg.Text('Novo País (ISO):', size=(15, 1)), sg.Input(key='pais')],
+            [sg.Button('Confirmar'), sg.Button('Cancelar')]
+        ]
+
+        window = sg.Window('Alterar Companhia', layout)
+
+        while True:
+            event, values = window.read()
+
+            if event in (sg.WIN_CLOSED, 'Cancelar'):
+                window.close()
+                return None
+
+            nome = values['nome'].strip()
+            if not nome:
+                nome = None # Mantém vazio para lógica de "não alterar"
+
+            codigo_pais = values['pais'].strip().upper()
+            pais_obj = None
+
+            if codigo_pais:
+                pais_obj = self.retorna_pais(codigo_pais)
+                if pais_obj is None:
+                    sg.popup_error('Código de país ISO 3166 não encontrado.')
+                    continue
+            
+            window.close()
+            return {"nome": nome, "pais_sede": pais_obj}
+
+    # Método novo para listar em Tabela (Suporte à opção 4)
+    def mostra_lista_companhias(self, companhias: list):
+        if not companhias:
+            sg.popup('Nenhuma companhia cadastrada.', title='Aviso')
+            return
+
+        dados_tabela = []
+        for comp in companhias:
+            # Tenta pegar atributo, se falhar usa dict (compatibilidade)
+            if isinstance(comp, dict):
+                id_ = comp.get('id', '')
+                nome = comp.get('nome', '')
+                pais = comp.get('pais_sede')
+            else:
+                id_ = getattr(comp, 'id', '')
+                nome = getattr(comp, 'nome', '')
+                pais = getattr(comp, 'pais_sede', None)
+            
+            # Extrai nome do objeto Pais
+            nome_pais = getattr(pais, 'nome', str(pais)) if pais else 'N/A'
+            
+            dados_tabela.append([id_, nome, nome_pais])
+
+        layout = [
+            [sg.Text('Lista de Companhias', font=('Helvetica', 15))],
+            [sg.Table(values=dados_tabela,
+                      headings=['ID', 'Nome', 'País Sede'],
+                      auto_size_columns=False,
+                      col_widths=[8, 30, 20],
+                      justification='left',
+                      num_rows=min(20, len(dados_tabela)),
+                      row_height=35)],
+            [sg.Button('Fechar')]
+        ]
+
+        window = sg.Window('Listagem', layout)
+        window.read()
+        window.close()
+
+    # Método auxiliar para Excluir/Alterar
+    def seleciona_companhia(self) -> int | None:
+        layout = [
+            [sg.Text('Informe o ID da Companhia:', font=('Helvetica', 12))],
+            [sg.Input(key='id', size=(20, 1))],
+            [sg.Button('OK'), sg.Button('Cancelar')]
+        ]
+        
+        window = sg.Window('Selecionar', layout, element_justification='c')
         
         while True:
-            nome = input("Nome: ")
-            if self.valor_eh_vazio(nome):
-                self.mostra_erro('Nome da companhia não pode ser vazio')
-            else:
-                break
-                
-        while True:
-            codigo_pais_sede = input("País sede (código ISO 3166): ")
-            pais = self.retorna_pais(codigo_pais_sede)
-
-            if pais is not None:
-                break
-
-            self.mostra_erro('Código de país no padrão ISO 3166 não existe')
-
-        return {"nome": nome, "pais_sede": pais}
-    
-    def pega_dados_opcionais_companhia(self) -> dict[str, Any]:
-        self.mostra_titulo('Novos Dados Companhia')
-        nome = input("Nome: ")
-
-        if self.valor_eh_vazio(nome):
-            nome = None
-
-        while True:
-            codigo_pais_sede = input("País sede (código ISO 3166): ")
-            if self.valor_eh_vazio(codigo_pais_sede):
-                pais = None
-                break
-
-            pais = self.retorna_pais(codigo_pais_sede)
-
-            if pais is not None:
-                break
-
-            self.mostra_erro('Código de país no padrão ISO 3166 não existe')
-
-        return {"nome": nome, "pais_sede": pais}
+            event, values = window.read()
+            if event in (sg.WIN_CLOSED, 'Cancelar'):
+                window.close()
+                return None
+            
+            id_str = values['id'].strip()
+            if id_str.isdigit():
+                window.close()
+                return int(id_str)
+            
+            sg.popup_error('O ID deve ser numérico.')

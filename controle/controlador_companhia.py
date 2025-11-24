@@ -13,6 +13,8 @@ class ControladorCompanhia(GeradorId):
 
     def inclui(self):
         dados = self.__tela_companhia.pega_dados_companhia()
+        if dados is None:
+            return
 
         companhia = Companhia(self.gera_id(), dados['nome'], dados['pais_sede'])
         self.__companhia_DAO.add(companhia)
@@ -44,7 +46,7 @@ class ControladorCompanhia(GeradorId):
         if novos_dados['pais_sede'] != None:
             companhia_atual.pais_sede = novos_dados['pais_sede']
 
-        self.__companhia_DAO.update(companhia_atual.id, companhia_atual)
+        self.__companhia_DAO.update(companhia_atual)
         self.__tela_companhia.mostra_mensagem(f'Companhia {companhia_atual.id} alterada com sucesso!')
 
     def exclui(self):
@@ -68,16 +70,15 @@ class ControladorCompanhia(GeradorId):
                 return
 
     def lista(self) -> bool:
-        print('\nListando companhias...')
-
         companhias = self.__companhia_DAO.get_all()
 
         if len(companhias) == 0:
-            print('Nenhuma companhia encontrada')
+            self.__tela_companhia.mostra_mensagem('Nenhuma companhia encontrada')
             return False
         
-        for companhia in companhias:
-            self.__tela_companhia.mostra_mensagem(f'{companhia.__str__()}')
+        # Em vez de um loop com print, passamos a lista inteira 
+        # para a tela montar a Tabela visual.
+        self.__tela_companhia.mostra_lista_companhias(companhias)
         
         return True
 
