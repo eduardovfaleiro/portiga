@@ -1,7 +1,6 @@
 from typing import Any
-from models.carga import Carga
-from telas.tela_carga import TelaCarga
-
+from entidade.carga import Carga
+from tela.tela_carga import TelaCarga
 
 class ControladorCarga:
     def __init__(self, controlador_sistema):  # type: ignore
