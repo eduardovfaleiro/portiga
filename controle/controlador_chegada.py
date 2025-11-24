@@ -3,6 +3,7 @@ from controle.gerador_id import GeradorId
 from entidade.chegada import Chegada
 from tela.movimentacao.tela_chegada import TelaChegada
 from DAOs.chegada_dao import ChegadaDAO
+import FreeSimpleGUI as sg
 
 class ControladorChegada(GeradorId):
     def __init__(self, controlador_sistema: Any):
