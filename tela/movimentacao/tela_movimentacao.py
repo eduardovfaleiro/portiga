@@ -6,7 +6,6 @@ from tela.tela_utils import TelaUtils
 import FreeSimpleGUI as sg
 
 class TelaMovimentacao(TelaUtils):
-    # Agora este método valida uma string em vez de pedir input
     def valida_converte_data(self, data_str: str) -> datetime | None:
         if not data_str or data_str.strip() == '':
             return datetime.now()

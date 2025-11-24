@@ -27,7 +27,6 @@ class TelaPartida(TelaMovimentacao):
             sg.popup('Nenhum item encontrado', title='Aviso')
             return False
 
-        # Prepara os dados: Tabela de coluna única com o resumo de cada partida
         dados_tabela = [[partida.to_string_resumido()] for partida in partidas]
 
         layout = [
@@ -52,17 +51,16 @@ class TelaPartida(TelaMovimentacao):
             sg.popup('Nenhum item encontrado', title='Aviso')
             return False
         
-        # Concatena todos os relatórios detalhados em uma única string
         texto_completo = ""
         for partida in partidas:
             texto_completo += partida.to_string_detalhado() + "\n"
-            texto_completo += "=" * 50 + "\n" # Separador visual entre itens
+            texto_completo += "=" * 50 + "\n"
         
         layout = [
             [sg.Text('Partidas (Detalhado)', font=('Helvetica', 15))],
             [sg.Multiline(default_text=texto_completo, 
-                          size=(80, 20),      # Tamanho do painel de visualização
-                          font=('Courier', 10), # Fonte monoespaçada para alinhamento de relatórios
+                          size=(80, 20),
+                          font=('Courier', 10),
                           disabled=True,
                           autoscroll=True)],
             [sg.Button('Fechar')]
@@ -96,28 +94,20 @@ class TelaPartida(TelaMovimentacao):
                 window.close()
                 return None
 
-            # Coleta de dados
             navio_str = values['navio'].strip()
             data_hora_str = values['data_hora'].strip()
             destino_str = values['destino'].strip()
 
-            # --- Validação ---
-            
-            # 1. Valida se Navio e Destino são numéricos
             if not (navio_str.isdigit() and destino_str.isdigit()):
                 sg.popup_error('ID do Navio e ID do Destino devem ser números inteiros.')
                 continue
 
-            # 2. Valida Data/Hora (usando o helper da classe pai)
-            # Retorna datetime.now() se a string estiver vazia OU o objeto datetime se válido
-            # Retorna None se a string for inválida
             data_hora_obj = self.valida_converte_data(data_hora_str)
             
             if data_hora_obj is None:
                 sg.popup_error('Data e hora inválidos. Use dd/MM/yy hh:mm ou deixe vazio.')
                 continue
 
-            # Se tudo estiver OK
             window.close()
             return {
                 'navio': int(navio_str),

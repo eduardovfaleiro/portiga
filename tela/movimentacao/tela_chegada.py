@@ -24,10 +24,8 @@ class TelaChegada(TelaMovimentacao):
     def pega_dados(self) -> dict[str, Any] | None:
         layout = [
             [sg.Text('Dados da Chegada', font=('Helvetica', 15), pad=(0,10))],
-            
+
             [sg.Text('ID do Navio:', size=(15, 1)), sg.Input(key='navio')],
-            
-            # Campo de Data com dica visual
             [sg.Text('Data/Hora:', size=(15, 1)), sg.Input(key='data_hora'), 
              sg.Text('(dd/mm/aa hh:mm ou vazio p/ agora)', font=('Helvetica', 8))],
             
@@ -46,24 +44,20 @@ class TelaChegada(TelaMovimentacao):
                 window.close()
                 return None
 
-            # --- Validação ---
             navio_str = values['navio']
             data_str = values['data_hora']
             dias_str = values['dias_viagem']
             procedencia_str = values['procedencia']
 
-            # 1. Valida Inteiros
             if not (navio_str.isdigit() and dias_str.isdigit() and procedencia_str.isdigit()):
                 sg.popup_error('Navio, Dias e Procedência devem ser números inteiros.')
                 continue
 
-            # 2. Valida Data (usando o método da classe pai)
             data_validada = self.valida_converte_data(data_str)
             if data_validada is None:
                 sg.popup_error('Data inválida! Use o formato dd/MM/yy hh:mm')
                 continue
 
-            # Se tudo estiver OK
             window.close()
             return {
                 'navio': int(navio_str),

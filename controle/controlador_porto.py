@@ -35,15 +35,11 @@ class ControladorPorto(GeradorId, Utils):
         return self.__porto_DAO.get(id)
 
     def lista(self) -> bool:
-        # A mensagem de "Listando..." é implícita ao abrir a janela de listagem
         portos = self.__porto_DAO.get_all()
         if len(portos) == 0:
-            # Em GUI, mostramos o erro/aviso em um popup
             self.__tela.mostra_erro('Nenhum porto encontrado')
             return False
         
-        # Em vez de um loop de prints ou popups individuais,
-        # passamos a lista completa para a tela montar a tabela.
         self.__tela.mostra_lista_portos(portos)
         
         return True

@@ -14,11 +14,10 @@ class TelaAdmin(TelaUtils):
         event, _ = window.read()
         window.close()
 
-        # Mapeia o texto do botão para o ID esperado pelo controlador
         if event == 'Incluir': return 1
         if event == 'Excluir': return 2
         if event == 'Listar': return 3
-        return 0  # Retornar ou fechar janela
+        return 0
 
     def pega_dados(self) -> dict:
         layout = [

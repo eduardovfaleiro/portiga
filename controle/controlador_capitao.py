@@ -51,19 +51,16 @@ class ControladorCapitao(GeradorId):
             sg.popup('Nenhum capitão encontrado')
             return False
 
-        # 1. Prepara os dados para a tabela (Matriz de strings/números)
         dados_tabela = []
         for capitao in capitaes:
-            # Adicione aqui os atributos que deseja mostrar (ex: ID e Nome)
             dados_tabela.append([capitao.id, capitao.nome])
 
-        # 2. Define o Layout
         layout = [
             [sg.Text('Lista de Capitães', font=('Helvetica', 15))],
             [sg.Table(values=dados_tabela,
-                      headings=['Código', 'Nome'],      # Títulos das colunas
-                      auto_size_columns=False,          # Desativa auto-size para usar col_widths
-                      col_widths=[10, 30],              # Largura das colunas (ID pequeno, Nome grande)
+                      headings=['Código', 'Nome'],    
+                      auto_size_columns=False,       
+                      col_widths=[10, 30],              
                       display_row_numbers=False,
                       justification='left',
                       num_rows=min(25, len(dados_tabela)),
@@ -72,7 +69,6 @@ class ControladorCapitao(GeradorId):
             [sg.Button('Fechar')]
         ]
 
-        # 3. Abre a Janela
         window = sg.Window('Listagem de Capitães', layout)
         window.read()
         window.close()

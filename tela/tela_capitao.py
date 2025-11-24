@@ -69,7 +69,6 @@ class TelaCapitao(TelaUtils):
             sg.popup_error('Código inválido. Informe apenas dígitos.')
 
     def mostra_capitao(self, capitao: Capitao):
-        # Transforma os prints em uma janela informativa
         mensagem = f"Código: {capitao.id}\nNome: {capitao.nome}"
         sg.popup('Detalhes do Capitão', mensagem, font=('Helvetica', 12))
 

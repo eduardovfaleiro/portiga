@@ -56,11 +56,9 @@ class ControladorPartida(GeradorId):
         partidas = self.__partidas
 
         if len(partidas) == 0:
-            # Chama o popup de erro da tela
             self.__tela.mostra_mensagem('Nenhum item encontrado') 
             return False
         
-        # O controlador delega a tarefa de exibição à tela, passando os dados
         self.__tela.mostra_lista_resumido(partidas)
 
         return True
@@ -72,7 +70,6 @@ class ControladorPartida(GeradorId):
             self.__tela.mostra_mensagem('Nenhum item encontrado')
             return False
         
-        # O controlador delega a tarefa de exibição à tela, passando os dados
         self.__tela.mostra_lista_detalhado(partidas)
         
         return True

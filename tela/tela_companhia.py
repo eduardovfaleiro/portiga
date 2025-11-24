@@ -46,12 +46,10 @@ class TelaCompanhia(TelaUtils, SeletorPais):
             nome = values['nome'].strip()
             codigo_pais = values['pais'].strip().upper()
 
-            # --- Validações ---
             if not nome:
                 sg.popup_error('O Nome da companhia é obrigatório.')
                 continue
             
-            # Usa o método herdado de SeletorPais
             pais_obj = self.retorna_pais(codigo_pais)
             if pais_obj is None:
                 sg.popup_error('Código de país ISO 3166 não encontrado.')
@@ -79,7 +77,7 @@ class TelaCompanhia(TelaUtils, SeletorPais):
 
             nome = values['nome'].strip()
             if not nome:
-                nome = None # Mantém vazio para lógica de "não alterar"
+                nome = None
 
             codigo_pais = values['pais'].strip().upper()
             pais_obj = None
@@ -93,7 +91,6 @@ class TelaCompanhia(TelaUtils, SeletorPais):
             window.close()
             return {"nome": nome, "pais_sede": pais_obj}
 
-    # Método novo para listar em Tabela (Suporte à opção 4)
     def mostra_lista_companhias(self, companhias: list):
         if not companhias:
             sg.popup('Nenhuma companhia cadastrada.', title='Aviso')
@@ -101,7 +98,6 @@ class TelaCompanhia(TelaUtils, SeletorPais):
 
         dados_tabela = []
         for comp in companhias:
-            # Tenta pegar atributo, se falhar usa dict (compatibilidade)
             if isinstance(comp, dict):
                 id_ = comp.get('id', '')
                 nome = comp.get('nome', '')
@@ -111,7 +107,6 @@ class TelaCompanhia(TelaUtils, SeletorPais):
                 nome = getattr(comp, 'nome', '')
                 pais = getattr(comp, 'pais_sede', None)
             
-            # Extrai nome do objeto Pais
             nome_pais = getattr(pais, 'nome', str(pais)) if pais else 'N/A'
             
             dados_tabela.append([id_, nome, nome_pais])
@@ -132,7 +127,6 @@ class TelaCompanhia(TelaUtils, SeletorPais):
         window.read()
         window.close()
 
-    # Método auxiliar para Excluir/Alterar
     def seleciona_companhia(self) -> int | None:
         layout = [
             [sg.Text('Informe o ID da Companhia:', font=('Helvetica', 12))],

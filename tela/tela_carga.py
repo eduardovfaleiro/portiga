@@ -29,7 +29,6 @@ class TelaCarga(TelaUtils):
         return int(event)
 
     def pega_dados_carga(self) -> dict[str, Any] | None:
-        # Mapeamento para facilitar a escolha do tipo
         tipos_map = {1: '1 - Granel Sólido', 2: '2 - Granel Líquido', 3: '3 - Carga Geral', 4: '4 - Carga Conteinerizada'}
         combo_values = list(tipos_map.values())
 
@@ -39,7 +38,6 @@ class TelaCarga(TelaUtils):
             [sg.Text('Código (ID):', size=(12, 1)), sg.Input(key='id')],
             [sg.Text('Produto:', size=(12, 1)), sg.Input(key='produto')],
             
-            # Combo é melhor que pedir para digitar 1, 2, 3...
             [sg.Text('Tipo:', size=(12, 1)), sg.Combo(combo_values, key='tipo', readonly=True, size=(30,1))],
             
             [sg.Text('Peso (kg):', size=(12, 1)), sg.Input(key='peso')],
@@ -57,14 +55,12 @@ class TelaCarga(TelaUtils):
                 window.close()
                 return None
 
-            # Coleta
             id_carga = values['id'].strip()
             produto = values['produto'].strip()
-            tipo_selecionado = values['tipo'] # Vem como "1 - Granel..." ou vazio
+            tipo_selecionado = values['tipo']
             peso_raw = values['peso'].strip()
             valor_raw = values['valor'].strip()
 
-            # Validações
             if not id_carga or not produto:
                 sg.popup_error('ID e Produto são obrigatórios.')
                 continue
@@ -73,7 +69,6 @@ class TelaCarga(TelaUtils):
                 sg.popup_error('Selecione um Tipo de Carga.')
                 continue
             
-            # Extrai o número do tipo da string "1 - Granel..." -> 1
             tipo_int = int(tipo_selecionado.split(' - ')[0])
 
             try:
@@ -94,7 +89,6 @@ class TelaCarga(TelaUtils):
                 'valor': valor
             }
 
-    # Método novo para suportar a listagem em tabela (Substitui o loop de prints)
     def mostra_lista_cargas(self, cargas: list) -> bool:
         if not cargas:
             sg.popup('Nenhuma carga encontrada', title='Aviso')
@@ -121,9 +115,7 @@ class TelaCarga(TelaUtils):
         window.close()
         return True
 
-    # Mantido para compatibilidade, mas agora usa Popup
     def mostra_carga(self, carga: Any):
-        # Se precisar mostrar um só (detalhe)
         mensagem = (
             f"Código: {getattr(carga, 'id', '')}\n"
             f"Produto: {getattr(carga, 'produto', '')}\n"
@@ -134,14 +126,12 @@ class TelaCarga(TelaUtils):
         sg.popup(mensagem, title='Detalhe da Carga')
 
     def seleciona_carga(self) -> str | None:
-        # Substitui input com validação de loop por um popup padrão
         id_selecionado = sg.popup_get_text('Digite o Código (ID) da Carga:', title='Selecionar')
         
         if id_selecionado and id_selecionado.strip():
-            # A validação de espaços (pattern \S+) pode ser feita aqui
             if ' ' in id_selecionado.strip():
                 sg.popup_error('Código inválido (não pode conter espaços).')
-                return self.seleciona_carga() # Recursivo simples ou return None
+                return self.seleciona_carga()
             return id_selecionado.strip()
         
         return None

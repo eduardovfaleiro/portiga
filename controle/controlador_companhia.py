@@ -75,9 +75,7 @@ class ControladorCompanhia(GeradorId):
         if len(companhias) == 0:
             self.__tela_companhia.mostra_mensagem('Nenhuma companhia encontrada')
             return False
-        
-        # Em vez de um loop com print, passamos a lista inteira 
-        # para a tela montar a Tabela visual.
+
         self.__tela_companhia.mostra_lista_companhias(companhias)
         
         return True

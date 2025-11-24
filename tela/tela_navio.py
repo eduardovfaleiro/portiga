@@ -50,24 +50,20 @@ class TelaNavio(TelaUtils, SeletorPais):
                 window.close()
                 return None
 
-            # Coleta dados
             nome = values['nome'].strip()
             iso_bandeira = values['bandeira'].strip().upper()
             companhia_str = values['companhia'].strip()
             capitao_str = values['capitao'].strip()
 
-            # --- Validações ---
             if not nome:
                 sg.popup_error('Nome do navio não pode ser vazio')
                 continue
 
-            # Valida Bandeira (Usa método da classe pai SeletorPais)
             bandeira_obj = self.retorna_pais(iso_bandeira)
             if bandeira_obj is None:
                 sg.popup_error('Código de país ISO 3166 não existe ou inválido.')
                 continue
 
-            # Valida IDs numéricos
             if not (companhia_str.isdigit() and capitao_str.isdigit()):
                 sg.popup_error('Código da Companhia e do Capitão devem ser números.')
                 continue
@@ -81,7 +77,6 @@ class TelaNavio(TelaUtils, SeletorPais):
             }
 
     def pega_dados_opcionais_navio(self) -> dict[str, Any] | None:
-        # Nota: Mostramos campos vazios. Se o usuário preencher, alteramos.
         layout = [
             [sg.Text('Alterar Navio (Deixe vazio para manter)', font=('Helvetica', 12))],
             [sg.Text('Novo Nome:', size=(15, 1)), sg.Input(key='nome')],
@@ -138,7 +133,6 @@ class TelaNavio(TelaUtils, SeletorPais):
         layout = [
             [sg.Text('Dados da Carga', font=('Helvetica', 14))],
             [sg.Text('Produto:', size=(10,1)), sg.Input(key='produto')],
-            # Usando Combo para o Tipo (1 a 4) para evitar erro de digitação
             [sg.Text('Tipo:', size=(10,1)), sg.Combo([1, 2, 3, 4], default_value=1, key='tipo', readonly=True)],
             [sg.Text('Peso (kg):', size=(10,1)), sg.Input(key='peso')],
             [sg.Text('Valor (R$):', size=(10,1)), sg.Input(key='valor')],
@@ -176,7 +170,6 @@ class TelaNavio(TelaUtils, SeletorPais):
             return {'produto': produto, 'tipo': tipo, 'peso': peso, 'valor': valor} # O tipo já vem certo do Combo
 
     def seleciona_carga(self) -> str | None:
-        # Carga pode ter ID com letras (pattern \S+), então usamos Input normal
         return sg.popup_get_text('Digite o Código da Carga:', title='Selecionar Carga')
 
     def seleciona_navio(self) -> int | None:
@@ -200,7 +193,6 @@ class TelaNavio(TelaUtils, SeletorPais):
             sg.popup_error('ID deve ser numérico.')
 
     def mostra_navio(self, navio: Any):
-        # Lógica de extração de dados mantida, apenas formatação visual mudada
         if isinstance(navio, dict):
             id_ = navio.get('id', '')
             nome = navio.get('nome', '')
@@ -220,7 +212,6 @@ class TelaNavio(TelaUtils, SeletorPais):
         companhia_txt = f'{companhia.id} {companhia.nome}' if companhia else 'N/A'
         capitao_txt = f'{capitao.id} {capitao.nome}' if capitao else 'N/A'
 
-        # Monta string de cargas
         cargas_str = "Nenhuma carga"
         if cargas:
             lista_cargas = []
@@ -250,7 +241,6 @@ class TelaNavio(TelaUtils, SeletorPais):
 
         dados_tabela = []
         for c in cargas:
-            # Extração segura de dados (compatível com seu código original)
             cid = getattr(c, 'id', None) or getattr(c, 'codigo', '')
             cproduto = getattr(c, 'produto', '')
             ctipo = getattr(c, 'tipo', '')
