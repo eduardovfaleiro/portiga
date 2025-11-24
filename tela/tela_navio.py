@@ -262,7 +262,6 @@ class TelaNavio(TelaUtils, SeletorPais):
             [sg.Button('Fechar e Selecionar ID', key='OK')]
         ]
 
-        # Janela Modal (bloqueia o fluxo até fechar)
         window = sg.Window('Cargas do Navio', layout, modal=True)
         window.read()
         window.close()

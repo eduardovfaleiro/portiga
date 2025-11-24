@@ -3,7 +3,6 @@ from entidade.carga import Carga
 
 class Relatorio:
     def __init__(self):
-        # separate counters
         self.__carregamentos = Counter()
         self.__descarregamentos = Counter()
 

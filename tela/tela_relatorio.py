@@ -1,4 +1,3 @@
-# REMOVER a linha: from entidade.carga import Carga
 from tela.tela_utils import TelaUtils
 import FreeSimpleGUI as sg
 
