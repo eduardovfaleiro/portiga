@@ -17,7 +17,7 @@ class ControladorPartida(GeradorId):
         
         navio = self.__controlador_sistema.controlador_navio.pega_navio_por_id(navio)
         if navio is None:
-            self.__tela.mostra_mensagem('ERRO: Navio não encontrado')
+            self.__tela.mostra_erro('Navio não encontrado')
             return
         destino = self.__controlador_sistema.controlador_porto.pega_porto_por_id(destino)
 
