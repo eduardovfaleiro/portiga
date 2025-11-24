@@ -2,44 +2,76 @@ import re
 from typing import Any
 from models.capitao import Capitao
 from telas.tela_utils import TelaUtils
+import FreeSimpleGUI as sg
 
 class TelaCapitao(TelaUtils):
-    __opcoes = {1: 'Incluir', 2: 'Excluir', 3: 'Listar', 0: 'Retornar'}
-
     def abre_opcoes(self) -> int:
-        self.mostra_titulo('Capitães')
-        self.mostra_opcoes(self.__opcoes)
-        return self.recebe_opcao(self.__opcoes)
+        layout = [
+            [sg.Text('Gerenciar Capitães', font=('Helvetica', 20), justification='center', expand_x=True)],
+            [sg.Button('Incluir', key=1, size=(15, 1)), sg.Button('Excluir', key=2, size=(15, 1)), sg.Button('Listar', key=3, size=(15, 1))],
+            [sg.Button('Retornar', key=0, button_color=('white', 'firebrick3'), pad=(0, 20))]
+        ]
 
-    def pega_dados_capitao(self) -> dict[str, Any]:
-        self.mostra_titulo('Dados Capitão')
+        window = sg.Window('Capitães', layout, element_justification='c')
+        event, _ = window.read()
+        window.close()
+
+        if event in (sg.WIN_CLOSED, None):
+            return 0
+        
+        return int(event)
+
+    def pega_dados_capitao(self) -> dict[str, Any] | None:
+        layout = [
+            [sg.Text('Nome do Capitão:', size=(15, 1)), sg.Input(key='nome')],
+            [sg.Button('Confirmar'), sg.Button('Cancelar')]
+        ]
+
+        window = sg.Window('Dados do Capitão', layout)
+
         while True:
-            nome = input('Nome: ').strip()
-            if nome == '':
-                self.mostra_erro('Nome não pode ser vazio')
-            else:
-                break
-        return {'nome': nome}
+            event, values = window.read()
 
-    def mostra_capitao(self, capitao: Capitao):
-        print(f'Código: {capitao.id}')
-        print(f'Nome: {capitao.nome}\n')
+            if event in (sg.WIN_CLOSED, 'Cancelar'):
+                window.close()
+                return None
+
+            nome = values['nome'].strip()
+
+            if nome:
+                window.close()
+                return {'nome': nome}
+            
+            sg.popup_error('O nome não pode ser vazio.')
 
     def seleciona_capitao(self) -> int | None:
-        pattern = r'^\d+$'
+        layout = [
+            [sg.Text('Digite o Código (ID) do Capitão:', font=('Helvetica', 12))],
+            [sg.Input(key='id', size=(20, 1))],
+            [sg.Button('Confirmar'), sg.Button('Cancelar')]
+        ]
+
+        window = sg.Window('Selecionar Capitão', layout, element_justification='c')
+
         while True:
-            user_input = input('Índice do capitão ("sair" para cancelar): ').strip()
-            if user_input.lower() == 'sair' or user_input == '':
+            event, values = window.read()
+
+            if event in (sg.WIN_CLOSED, 'Cancelar'):
+                window.close()
                 return None
-            if re.match(pattern, user_input):
+
+            user_input = values['id'].strip()
+
+            if user_input.isdigit():
+                window.close()
                 return int(user_input)
-            self.mostra_erro('Índice inválido. Informe apenas dígitos.')
+            
+            sg.popup_error('Código inválido. Informe apenas dígitos.')
 
-    def mostra_titulo(self, texto: str) -> None:
-        print(f'\n=== {texto} ===')
+    def mostra_capitao(self, capitao: Capitao):
+        # Transforma os prints em uma janela informativa
+        mensagem = f"Código: {capitao.id}\nNome: {capitao.nome}"
+        sg.popup('Detalhes do Capitão', mensagem, font=('Helvetica', 12))
 
-    def mostra_mensagem(self, mensagem: str) -> None:
-        print(mensagem)
-
-    def mostra_erro(self, mensagem: str) -> None:
-        print(f'ERRO: {mensagem}')
+    def mostra_erro(self, mensagem: str):
+        sg.popup_error('Erro', mensagem)

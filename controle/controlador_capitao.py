@@ -4,6 +4,7 @@ from controle.gerador_id import GeradorId
 from models.capitao import Capitao
 from telas.tela_capitao import TelaCapitao
 from DAOs.capitao_dao import CapitaoDAO
+import FreeSimpleGUI as sg
 
 class ControladorCapitao(GeradorId):
     def __init__(self, controlador_sistema):  # type: ignore
@@ -44,15 +45,37 @@ class ControladorCapitao(GeradorId):
         self.lista()
 
     def lista(self) -> bool:
-        print('\nListando capitães...')
         capitaes = self.__capitao_DAO.get_all()
 
         if len(capitaes) == 0:
-            print('Nenhum capitão encontrado')
+            sg.popup('Nenhum capitão encontrado')
             return False
 
+        # 1. Prepara os dados para a tabela (Matriz de strings/números)
+        dados_tabela = []
         for capitao in capitaes:
-            self.__tela_capitao.mostra_capitao(capitao)
+            # Adicione aqui os atributos que deseja mostrar (ex: ID e Nome)
+            dados_tabela.append([capitao.id, capitao.nome])
+
+        # 2. Define o Layout
+        layout = [
+            [sg.Text('Lista de Capitães', font=('Helvetica', 15))],
+            [sg.Table(values=dados_tabela,
+                      headings=['Código', 'Nome'],      # Títulos das colunas
+                      auto_size_columns=False,          # Desativa auto-size para usar col_widths
+                      col_widths=[10, 30],              # Largura das colunas (ID pequeno, Nome grande)
+                      display_row_numbers=False,
+                      justification='left',
+                      num_rows=min(25, len(dados_tabela)),
+                      key='-TABELA-',
+                      row_height=35)],
+            [sg.Button('Fechar')]
+        ]
+
+        # 3. Abre a Janela
+        window = sg.Window('Listagem de Capitães', layout)
+        window.read()
+        window.close()
 
         return True
 
