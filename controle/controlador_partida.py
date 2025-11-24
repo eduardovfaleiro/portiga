@@ -30,8 +30,6 @@ class ControladorPartida(GeradorId):
         self.__tela.mostra_mensagem('Partida adicionada com sucesso!')
 
     def exclui(self):
-        self.__tela.mostra_titulo('Excluir Partida')
-
         tem_partidas = self.lista_resumido()
         if not tem_partidas: return
 

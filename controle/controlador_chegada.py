@@ -30,8 +30,6 @@ class ControladorChegada(GeradorId):
         self.__tela.mostra_mensagem('Chegada adicionada com sucesso!')
 
     def exclui(self):
-        self.__tela.mostra_titulo('Excluir Chegada')
-
         tem_chegadas = self.lista_resumido()
         if not tem_chegadas: return
 

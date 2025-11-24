@@ -45,8 +45,6 @@ class ControladorPorto(GeradorId, Utils):
         return True
 
     def exclui(self):
-        self.__tela.mostra_titulo('Excluir Porto')
-
         tem_porto = self.lista()
         if not tem_porto: return
 
@@ -64,9 +62,7 @@ class ControladorPorto(GeradorId, Utils):
                 
             self.__tela.mostra_erro('Porto não existe')
 
-    def altera(self):
-        self.__tela.mostra_titulo('Alterar Porto')
-        
+    def altera(self):        
         tem_portos = self.lista()
         if not tem_portos: return
 

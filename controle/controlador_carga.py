@@ -50,8 +50,6 @@ class ControladorCarga:
         self.__tela.mostra_mensagem('Carga adicionada com sucesso!')
 
     def exclui(self):
-        self.__tela.mostra_titulo('Excluir Carga')
-
         if not self.lista():
             return
 

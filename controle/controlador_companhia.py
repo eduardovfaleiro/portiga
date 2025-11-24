@@ -24,7 +24,6 @@ class ControladorCompanhia(GeradorId):
         return self.__companhia_DAO.get(id)
 
     def altera(self):
-        self.__tela_companhia.mostra_titulo('Alterar Companhia')
         tem_companhias = self.lista()
         if not tem_companhias: return
 
@@ -50,8 +49,6 @@ class ControladorCompanhia(GeradorId):
         self.__tela_companhia.mostra_mensagem(f'Companhia {companhia_atual.id} alterada com sucesso!')
 
     def exclui(self):
-        self.__tela_companhia.mostra_titulo('Excluir Companhia')
-
         tem_companhias = self.lista()
         if not tem_companhias: return
 

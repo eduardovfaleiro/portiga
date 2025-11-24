@@ -25,8 +25,6 @@ class ControladorCapitao(GeradorId):
         return self.__capitao_DAO.get(id)
 
     def exclui(self):
-        self.__tela_capitao.mostra_titulo('Excluir Capitão')
-
         if not self.lista():
             return
 

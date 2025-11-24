@@ -40,8 +40,6 @@ class ControladorNavio(GeradorId):
         return self.__navio_DAO.get(id)
 
     def altera(self):
-        self.__tela_navio.mostra_titulo('Alterar Navio')
-
         tem_navios = self.lista()
         if not tem_navios:
             return
@@ -81,8 +79,6 @@ class ControladorNavio(GeradorId):
         self.__tela_navio.mostra_mensagem(f'Navio {navio_atual.id} alterado com sucesso!')
 
     def exclui(self):
-        self.__tela_navio.mostra_titulo('Excluir Navio')
-
         tem_navios = self.lista()
         if not tem_navios:
             return
