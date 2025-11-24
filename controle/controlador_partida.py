@@ -16,8 +16,11 @@ class ControladorPartida(GeradorId):
         navio, data_hora, destino = self.__tela.pega_dados().values()
         
         navio = self.__controlador_sistema.controlador_navio.pega_navio_por_id(navio)
+        if navio is None:
+            self.__tela.mostra_mensagem('ERRO: Navio não encontrado')
+            return
         destino = self.__controlador_sistema.controlador_porto.pega_porto_por_id(destino)
-        
+
         partida = Partida(self.gera_id(), navio, data_hora, destino)
         
         self.__partida_DAO.add(partida)

@@ -17,6 +17,9 @@ class ControladorChegada(GeradorId):
             self.__tela.pega_dados().values()
         
         navio = self.__controlador_sistema.controlador_navio.pega_navio_por_id(navio)
+        if navio is None:
+            self.__tela.mostra_mensagem('ERRO: Navio não encontrado')
+            return
         procedencia = self.__controlador_sistema.controlador_porto.pega_porto_por_id(procedencia)
 
         chegada = Chegada(id=self.gera_id(), navio=navio, data_hora=data_hora, \
