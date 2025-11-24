@@ -1,81 +1,147 @@
 import re
 from typing import Any
 from telas.tela_utils import TelaUtils
-
+import FreeSimpleGUI as sg
 
 class TelaCarga(TelaUtils):
-    __opcoes = {1: 'Incluir', 2: 'Excluir', 3: 'Listar', 0: 'Retornar'}
+    def __init__(self):
+        sg.theme('DarkTeal9')
 
     def abre_opcoes(self) -> int:
-        self.mostra_titulo('Cargas')
-        self.mostra_opcoes(self.__opcoes)
-        return self.recebe_opcao(self.__opcoes)
+        layout = [
+            [sg.Text('Gerenciar Cargas', font=('Helvetica', 20), justification='center', expand_x=True)],
+            
+            [sg.Button('Incluir', key=1, size=(15, 1)), sg.Button('Excluir', key=2, size=(15, 1))],
+            [sg.Button('Listar', key=3, size=(15, 1))],
+            
+            [sg.HorizontalSeparator(pad=(0, 10))],
+            
+            [sg.Button('Retornar', key=0, button_color=('white', 'firebrick3'), pad=(0, 20))]
+        ]
+
+        window = sg.Window('Cargas', layout, element_justification='c')
+        event, _ = window.read()
+        window.close()
+
+        if event in (sg.WIN_CLOSED, None):
+            return 0
+        return int(event)
 
     def pega_dados_carga(self) -> dict[str, Any] | None:
-        self.mostra_titulo('Dados Carga')
+        # Mapeamento para facilitar a escolha do tipo
+        tipos_map = {1: '1 - Granel Sólido', 2: '2 - Granel Líquido', 3: '3 - Carga Geral', 4: '4 - Carga Conteinerizada'}
+        combo_values = list(tipos_map.values())
 
-        id = input('Código: ').strip()
-        if id == '':
-            self.mostra_erro('Código não pode ser vazio')
-            return None
+        layout = [
+            [sg.Text('Cadastro de Carga', font=('Helvetica', 14))],
+            
+            [sg.Text('Código (ID):', size=(12, 1)), sg.Input(key='id')],
+            [sg.Text('Produto:', size=(12, 1)), sg.Input(key='produto')],
+            
+            # Combo é melhor que pedir para digitar 1, 2, 3...
+            [sg.Text('Tipo:', size=(12, 1)), sg.Combo(combo_values, key='tipo', readonly=True, size=(30,1))],
+            
+            [sg.Text('Peso (kg):', size=(12, 1)), sg.Input(key='peso')],
+            [sg.Text('Valor (R$):', size=(12, 1)), sg.Input(key='valor')],
+            
+            [sg.Button('Confirmar'), sg.Button('Cancelar')]
+        ]
 
-        produto = input('Produto: ').strip()
-        if produto == '':
-            self.mostra_erro('Produto não pode ser vazio')
-            return None
+        window = sg.Window('Dados da Carga', layout)
 
-        tipo_raw = input('Tipo: ').strip()
-        tipo = int(tipo_raw)
-        if tipo == '':
-            self.mostra_erro('Tipo não pode ser vazio')
-            return None
-        if tipo < 1 or tipo > 4:
-            self.mostra_erro('Tipo deve ser um número entre 1 e 4')
-            return None
+        while True:
+            event, values = window.read()
 
-        peso_raw = input('Peso (kg): ').strip()
-        try:
-            peso = float(peso_raw)
-            if peso < 0:
-                raise ValueError()
-        except Exception:
-            self.mostra_erro('Peso inválido')
-            return None
+            if event in (sg.WIN_CLOSED, 'Cancelar'):
+                window.close()
+                return None
 
-        valor_raw = input('Valor (R$): ').strip()
-        try:
-            valor = float(valor_raw)
-            if valor < 0:
-                raise ValueError()
-        except Exception:
-            self.mostra_erro('Valor inválido')
-            return None
+            # Coleta
+            id_carga = values['id'].strip()
+            produto = values['produto'].strip()
+            tipo_selecionado = values['tipo'] # Vem como "1 - Granel..." ou vazio
+            peso_raw = values['peso'].strip()
+            valor_raw = values['valor'].strip()
 
-        return {'id': id, 'produto': produto, 'tipo': tipo, 'peso': peso, 'valor': valor}
+            # Validações
+            if not id_carga or not produto:
+                sg.popup_error('ID e Produto são obrigatórios.')
+                continue
+            
+            if not tipo_selecionado:
+                sg.popup_error('Selecione um Tipo de Carga.')
+                continue
+            
+            # Extrai o número do tipo da string "1 - Granel..." -> 1
+            tipo_int = int(tipo_selecionado.split(' - ')[0])
 
+            try:
+                peso = float(peso_raw)
+                valor = float(valor_raw)
+                if peso < 0 or valor < 0:
+                    raise ValueError
+            except ValueError:
+                sg.popup_error('Peso e Valor devem ser números positivos.')
+                continue
+
+            window.close()
+            return {
+                'id': id_carga,
+                'produto': produto,
+                'tipo': tipo_int,
+                'peso': peso,
+                'valor': valor
+            }
+
+    # Método novo para suportar a listagem em tabela (Substitui o loop de prints)
+    def mostra_lista_cargas(self, cargas: list) -> bool:
+        if not cargas:
+            sg.popup('Nenhuma carga encontrada', title='Aviso')
+            return False
+
+        dados_tabela = []
+        for c in cargas:
+            dados_tabela.append([c.id, c.produto, c.tipo, f"{c.peso} kg", f"R$ {c.valor:.2f}"])
+
+        layout = [
+            [sg.Text('Lista de Cargas', font=('Helvetica', 15))],
+            [sg.Table(values=dados_tabela,
+                      headings=['ID', 'Produto', 'Tipo', 'Peso', 'Valor'],
+                      auto_size_columns=False,
+                      col_widths=[10, 25, 5, 12, 12],
+                      justification='left',
+                      num_rows=min(25, len(dados_tabela)),
+                      row_height=35)],
+            [sg.Button('Fechar')]
+        ]
+
+        window = sg.Window('Listagem', layout)
+        window.read()
+        window.close()
+        return True
+
+    # Mantido para compatibilidade, mas agora usa Popup
     def mostra_carga(self, carga: Any):
-        id = getattr(carga, 'id', '')
-        produto = getattr(carga, 'produto', '')
-        tipo = getattr(carga, 'tipo', '')
-        peso = getattr(carga, 'peso', '')
-        valor = getattr(carga, 'valor', '')
-        print(f'Código: {id} | Produto: {produto} | Tipo: {tipo} | Peso: {peso} kg | Valor: R$ {valor}')
+        # Se precisar mostrar um só (detalhe)
+        mensagem = (
+            f"Código: {getattr(carga, 'id', '')}\n"
+            f"Produto: {getattr(carga, 'produto', '')}\n"
+            f"Tipo: {getattr(carga, 'tipo', '')}\n"
+            f"Peso: {getattr(carga, 'peso', '')} kg\n"
+            f"Valor: R$ {getattr(carga, 'valor', '')}"
+        )
+        sg.popup(mensagem, title='Detalhe da Carga')
 
     def seleciona_carga(self) -> str | None:
-        pattern = r'^\S+$'  # código sem espaços
-        while True:
-            user_input = input('Código da carga ("sair" para cancelar): ').strip()
-            if user_input.lower() == 'sair' or user_input == '':
-                return None
-            if re.match(pattern, user_input):
-                return user_input
-            self.mostra_erro('Código inválido')
-
-    def mostra_titulo(self, texto: str) -> None:
-        print(f'\n=== {texto} ===')
-
-    def mostra_mensagem(self, mensagem: str) -> None:
-        print(mensagem)
-
-    def mostra_erro(self, mensagem: str) -> None:
-        print(f'ERRO: {mensagem}')
+        # Substitui input com validação de loop por um popup padrão
+        id_selecionado = sg.popup_get_text('Digite o Código (ID) da Carga:', title='Selecionar')
+        
+        if id_selecionado and id_selecionado.strip():
+            # A validação de espaços (pattern \S+) pode ser feita aqui
+            if ' ' in id_selecionado.strip():
+                sg.popup_error('Código inválido (não pode conter espaços).')
+                return self.seleciona_carga() # Recursivo simples ou return None
+            return id_selecionado.strip()
+        
+        return None
+    

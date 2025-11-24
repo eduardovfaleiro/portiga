@@ -5,153 +5,201 @@ from typing import Any
 from models.pais import Pais
 from telas.seletor_pais import SeletorPais
 from telas.tela_utils import TelaUtils
-
+import FreeSimpleGUI as sg
 
 class TelaNavio(TelaUtils, SeletorPais):
-    __opcoes = {1: 'Incluir', 2: 'Excluir', 3: 'Alterar', 4: 'Listar', 5: 'Carregar', 6: 'Descarregar', 0: 'Retornar'}
- 
     def abre_opcoes(self) -> int:
-        self.mostra_titulo('Navios')
-        self.mostra_opcoes(self.__opcoes)
-        return self.recebe_opcao(self.__opcoes)
+        layout = [
+            [sg.Text('Gerenciamento de Navios', font=('Helvetica', 20), justification='center', expand_x=True)],
+            
+            [sg.Button('Incluir', key=1, size=(15, 1)), sg.Button('Excluir', key=2, size=(15, 1))],
+            [sg.Button('Alterar', key=3, size=(15, 1)), sg.Button('Listar', key=4, size=(15, 1))],
+            
+            [sg.HorizontalSeparator(pad=(0, 10))],
+            
+            [sg.Button('Carregar Carga', key=5, size=(15, 1)), sg.Button('Descarregar', key=6, size=(15, 1))],
+            
+            [sg.Button('Retornar', key=0, button_color=('white', 'firebrick3'), pad=(0, 20))]
+        ]
 
-    def pega_dados_navio(self) -> dict[str, Any]:
-        self.mostra_titulo('Dados Navio')
+        window = sg.Window('Navios', layout, element_justification='c')
+        event, _ = window.read()
+        window.close()
+
+        if event in (sg.WIN_CLOSED, None):
+            return 0
+        return int(event)
+
+    def pega_dados_navio(self) -> dict[str, Any] | None:
+        layout = [
+            [sg.Text('Cadastro de Navio', font=('Helvetica', 14))],
+            [sg.Text('Nome:', size=(15, 1)), sg.Input(key='nome')],
+            [sg.Text('Bandeira (ISO):', size=(15, 1)), sg.Input(key='bandeira', size=(5,1)), sg.Text('(Ex: BRA, USA)')],
+            [sg.Text('ID Companhia:', size=(15, 1)), sg.Input(key='companhia')],
+            [sg.Text('ID Capitão:', size=(15, 1)), sg.Input(key='capitao')],
+            [sg.Button('Confirmar'), sg.Button('Cancelar')]
+        ]
+
+        window = sg.Window('Novo Navio', layout)
 
         while True:
-            nome = input("Nome: ").strip()
-            if self.valor_eh_vazio(nome):
-                self.mostra_erro('Nome do navio não pode ser vazio')
-            else:
-                break
+            event, values = window.read()
+
+            if event in (sg.WIN_CLOSED, 'Cancelar'):
+                window.close()
+                return None
+
+            # Coleta dados
+            nome = values['nome'].strip()
+            iso_bandeira = values['bandeira'].strip().upper()
+            companhia_str = values['companhia'].strip()
+            capitao_str = values['capitao'].strip()
+
+            # --- Validações ---
+            if not nome:
+                sg.popup_error('Nome do navio não pode ser vazio')
+                continue
+
+            # Valida Bandeira (Usa método da classe pai SeletorPais)
+            bandeira_obj = self.retorna_pais(iso_bandeira)
+            if bandeira_obj is None:
+                sg.popup_error('Código de país ISO 3166 não existe ou inválido.')
+                continue
+
+            # Valida IDs numéricos
+            if not (companhia_str.isdigit() and capitao_str.isdigit()):
+                sg.popup_error('Código da Companhia e do Capitão devem ser números.')
+                continue
+
+            window.close()
+            return {
+                "nome": nome,
+                "bandeira": bandeira_obj,
+                "companhia": int(companhia_str),
+                "capitao": int(capitao_str),
+            }
+
+    def pega_dados_opcionais_navio(self) -> dict[str, Any] | None:
+        # Nota: Mostramos campos vazios. Se o usuário preencher, alteramos.
+        layout = [
+            [sg.Text('Alterar Navio (Deixe vazio para manter)', font=('Helvetica', 12))],
+            [sg.Text('Novo Nome:', size=(15, 1)), sg.Input(key='nome')],
+            [sg.Text('Nova Bandeira:', size=(15, 1)), sg.Input(key='bandeira')],
+            [sg.Text('Nova Cia ID:', size=(15, 1)), sg.Input(key='companhia')],
+            [sg.Text('Novo Capitão ID:', size=(15, 1)), sg.Input(key='capitao')],
+            [sg.Button('Confirmar'), sg.Button('Cancelar')]
+        ]
+
+        window = sg.Window('Alterar Navio', layout)
 
         while True:
-            codigo_bandeira = input("Bandeira (código ISO 3166): ").strip().upper()
-            bandeira = self.retorna_pais(codigo_bandeira)
-            if bandeira is not None:
-                break
-            self.mostra_erro('Código de país no padrão ISO 3166 não existe')
+            event, values = window.read()
 
-        # Companhia (id)
-        while True:
-            companhia_raw = input("Código da companhia (dígitos): ").strip()
-            if companhia_raw.isdigit():
-                companhia_id = int(companhia_raw)
-                break
-            self.mostra_erro('Código da companhia só pode ser composto por dígitos')
+            if event in (sg.WIN_CLOSED, 'Cancelar'):
+                window.close()
+                return None
 
-        # Capitão (id)
-        while True:
-            capitao_raw = input("Código do capitão (dígitos): ").strip()
-            if capitao_raw.isdigit():
-                capitao_id = int(capitao_raw)
-                break
-            self.mostra_erro('Código do capitão só pode ser composto por dígitos')
+            nome = values['nome'].strip() or None
+            iso_bandeira = values['bandeira'].strip().upper()
+            companhia_str = values['companhia'].strip()
+            capitao_str = values['capitao'].strip()
 
-        return {
-            "nome": nome,
-            "bandeira": bandeira,
-            "companhia": companhia_id,
-            "capitao": capitao_id,
-        }
+            bandeira_obj = None
+            if iso_bandeira:
+                bandeira_obj = self.retorna_pais(iso_bandeira)
+                if bandeira_obj is None:
+                    sg.popup_error('Código de país inválido.')
+                    continue
+            
+            companhia_id = None
+            if companhia_str:
+                if not companhia_str.isdigit():
+                    sg.popup_error('ID da Companhia deve ser número.')
+                    continue
+                companhia_id = int(companhia_str)
 
-    def pega_dados_opcionais_navio(self) -> dict[str, Any]:
-        self.mostra_titulo('Novos Dados Navio')
+            capitao_id = None
+            if capitao_str:
+                if not capitao_str.isdigit():
+                    sg.popup_error('ID do Capitão deve ser número.')
+                    continue
+                capitao_id = int(capitao_str)
 
-        nome = input("Nome: ").strip()
-        if nome == '':
-            nome = None
-
-        # Bandeira opcional
-        while True:
-            codigo_bandeira = input("Bandeira (código ISO 3166): ").strip().upper()
-            if codigo_bandeira == '':
-                bandeira = None
-                break
-            bandeira = self.retorna_pais(codigo_bandeira)
-            if bandeira is not None:
-                break
-            self.mostra_erro('Código de país no padrão ISO 3166 não existe')
-
-        # Companhia opcional
-        while True:
-            companhia_raw = input("Código da companhia: ").strip()
-            if companhia_raw == '':
-                companhia = None
-                break
-            if companhia_raw.isdigit():
-                companhia = int(companhia_raw)
-                break
-            self.mostra_erro('Código da companhia só pode ser composto por dígitos')
-
-        # Capitão opcional
-        while True:
-            capitao_raw = input("Código do capitão: ").strip()
-            if capitao_raw == '':
-                capitao = None
-                break
-            if capitao_raw.isdigit():
-                capitao = int(capitao_raw)
-                break
-            self.mostra_erro('Código do capitão só pode ser composto por dígitos')
-
-        return {
-            "nome": nome,
-            "bandeira": bandeira,
-            "companhia": companhia,
-            "capitao": capitao,
-        }
+            window.close()
+            return {
+                "nome": nome,
+                "bandeira": bandeira_obj,
+                "companhia": companhia_id,
+                "capitao": capitao_id,
+            }
 
     def pega_dados_carga(self) -> dict[str, Any] | None:
-        self.mostra_titulo('Dados da Carga')
+        layout = [
+            [sg.Text('Dados da Carga', font=('Helvetica', 14))],
+            [sg.Text('Produto:', size=(10,1)), sg.Input(key='produto')],
+            # Usando Combo para o Tipo (1 a 4) para evitar erro de digitação
+            [sg.Text('Tipo:', size=(10,1)), sg.Combo([1, 2, 3, 4], default_value=1, key='tipo', readonly=True)],
+            [sg.Text('Peso (kg):', size=(10,1)), sg.Input(key='peso')],
+            [sg.Text('Valor (R$):', size=(10,1)), sg.Input(key='valor')],
+            [sg.Button('Confirmar'), sg.Button('Cancelar')]
+        ]
 
-    
-        produto = input('Produto: ').strip()
-        if produto == '':
-            self.mostra_erro('Produto não pode ser vazio.')
-            return None
+        window = sg.Window('Adicionar Carga', layout)
 
-        tipo_raw = input('Tipo: ').strip()
-        tipo = int(tipo_raw)
-        if tipo == '':
-            self.mostra_erro('Tipo não pode ser vazio')
-            return None
-        if tipo < 1 or tipo > 4:
-            self.mostra_erro('Tipo deve ser um número entre 1 e 4')
-            return None
+        while True:
+            event, values = window.read()
+            if event in (sg.WIN_CLOSED, 'Cancelar'):
+                window.close()
+                return None
 
-        peso_raw = input('Peso (kg): ').strip()
-        try:
-            peso = float(peso_raw)
-            if peso < 0:
-                raise ValueError()
-        except Exception:
-            self.mostra_erro('Peso inválido')
-            return None
+            produto = values['produto'].strip()
+            peso_raw = values['peso'].strip()
+            valor_raw = values['valor'].strip()
+            tipo = values['tipo']
+            
+            # Validações
+            if not produto:
+                sg.popup_error('Produto não pode ser vazio.')
+                continue
 
-        valor_raw = input('Valor (R$): ').strip()
-        try:
-            valor = float(valor_raw)
-            if valor < 0:
-                raise ValueError()
-        except Exception:
-            self.mostra_erro('Valor inválido.')
-            return None
+            try:
+                peso = float(peso_raw)
+                valor = float(valor_raw)
+                if peso < 0 or valor < 0:
+                    raise ValueError
+            except ValueError:
+                sg.popup_error('Peso e Valor devem ser números positivos.')
+                continue
 
-        return {'produto': produto, 'peso': peso, 'valor': valor}
+            window.close()
+            return {'produto': produto, 'tipo': tipo, 'peso': peso, 'valor': valor} # O tipo já vem certo do Combo
 
     def seleciona_carga(self) -> str | None:
-        pattern = r'^\S+$'
+        # Carga pode ter ID com letras (pattern \S+), então usamos Input normal
+        return sg.popup_get_text('Digite o Código da Carga:', title='Selecionar Carga')
+
+    def seleciona_navio(self) -> int | None:
+        layout = [
+            [sg.Text('Digite o ID do Navio:', font=('Helvetica', 12))],
+            [sg.Input(key='id', size=(20,1))],
+            [sg.Button('OK'), sg.Button('Cancelar')]
+        ]
+        window = sg.Window('Selecionar Navio', layout, element_justification='c')
+        
         while True:
-            user_input = input('Código da carga ("sair" para cancelar): ').strip()
-            if user_input.lower() == 'sair' or user_input == '':
+            event, values = window.read()
+            if event in (sg.WIN_CLOSED, 'Cancelar'):
+                window.close()
                 return None
-            if re.match(pattern, user_input):
-                return user_input
-            self.mostra_erro('Código da carga inválido (não pode conter espaços).')
+            
+            if values['id'].strip().isdigit():
+                window.close()
+                return int(values['id'])
+            
+            sg.popup_error('ID deve ser numérico.')
 
     def mostra_navio(self, navio: Any):
-        # aceita objeto com atributos ou dict
+        # Lógica de extração de dados mantida, apenas formatação visual mudada
         if isinstance(navio, dict):
             id_ = navio.get('id', '')
             nome = navio.get('nome', '')
@@ -171,38 +219,59 @@ class TelaNavio(TelaUtils, SeletorPais):
         companhia_txt = f'{companhia.id} {companhia.nome}' if companhia else 'N/A'
         capitao_txt = f'{capitao.id} {capitao.nome}' if capitao else 'N/A'
 
-        print(f'Código: {id_}')
-        print(f'Nome: {nome}')
-        print(f'Bandeira: {bandeira_txt}')
-        print(f'Companhia: {companhia_txt}')
-        print(f'Capitão: {capitao_txt}')
-
-        # mostra resumo das cargas embarcadas (se houver)
+        # Monta string de cargas
+        cargas_str = "Nenhuma carga"
         if cargas:
-            if isinstance(cargas, list):
-                cargas_txt = []
-                for c in cargas:
-                    cid = getattr(c, 'id', None) or getattr(c, 'codigo', None) or str(c)
-                    cproduto = getattr(c, 'produto', '') or ''
-                    ctipo = getattr(c, 'tipo', '') or ''
-                    cpeso = getattr(c, 'peso', '') or ''
-                    cvalor = getattr(c, 'valor', '') or ''
-                    cargas_txt.append(f'{cid}: {cproduto}, {ctipo}, {cpeso} kg, R${cvalor}')
-                print('Cargas:', ' | '.join(cargas_txt))
-            else:
-                print('Cargas: N/A')
-        else:
-            print('Cargas: Nenhuma')
+            lista_cargas = []
+            for c in cargas:
+                cid = getattr(c, 'id', None) or getattr(c, 'codigo', None) or str(c)
+                cproduto = getattr(c, 'produto', '')
+                cpeso = getattr(c, 'peso', '')
+                lista_cargas.append(f"[{cid}] {cproduto} ({cpeso}kg)")
+            cargas_str = "\n".join(lista_cargas)
 
-    def seleciona_navio(self) -> int | None:
-        pattern = r'^\d+$'
-        while True:
-            user_input = input('Código do navio que deseja selecionar ("sair" para cancelar): ').strip()
-            if user_input.lower() == 'sair' or user_input == '':
-                return None
-            if re.match(pattern, user_input):
-                return int(user_input)
-            self.mostra_erro('Código do navio só pode ser composto por dígitos')
+        mensagem = (
+            f"ID: {id_}\n"
+            f"Nome: {nome}\n"
+            f"Bandeira: {bandeira_txt}\n"
+            f"Companhia: {companhia_txt}\n"
+            f"Capitão: {capitao_txt}\n\n"
+            f"--- CARGAS ---\n{cargas_str}"
+        )
 
-    def mostra_mensagem(self, mensagem: str):
-        print(mensagem)
+        sg.popup_scrolled(mensagem, title=f'Detalhes do Navio {id_}', size=(50, 15))
+
+
+    def mostra_cargas_navio(self, cargas: list):
+        if not cargas:
+            sg.popup('Este navio não possui cargas.', title='Vazio')
+            return
+
+        dados_tabela = []
+        for c in cargas:
+            # Extração segura de dados (compatível com seu código original)
+            cid = getattr(c, 'id', None) or getattr(c, 'codigo', '')
+            cproduto = getattr(c, 'produto', '')
+            ctipo = getattr(c, 'tipo', '')
+            cpeso = getattr(c, 'peso', '')
+            cvalor = getattr(c, 'valor', '')
+            
+            dados_tabela.append([cid, cproduto, ctipo, f"{cpeso} kg", f"R$ {cvalor}"])
+
+        layout = [
+            [sg.Text('Cargas Embarcadas neste Navio', font=('Helvetica', 14))],
+            [sg.Text('Visualize abaixo para escolher qual ID remover', font=('Helvetica', 10))],
+            [sg.Table(values=dados_tabela,
+                      headings=['ID', 'Produto', 'Tipo', 'Peso', 'Valor'],
+                      auto_size_columns=False,
+                      col_widths=[8, 20, 5, 12, 12],
+                      justification='left',
+                      num_rows=min(10, len(dados_tabela)),
+                      row_height=35)],
+            [sg.Button('Fechar e Selecionar ID', key='OK')]
+        ]
+
+        # Janela Modal (bloqueia o fluxo até fechar)
+        window = sg.Window('Cargas do Navio', layout, modal=True)
+        window.read()
+        window.close()
