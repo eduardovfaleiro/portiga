@@ -7,6 +7,7 @@ from controle.controlador_partida import ControladorPartida
 from controle.controlador_porto import ControladorPorto
 from controle.controlador_relatorio import ControladorRelatorio
 from telas.tela_sistema import TelaSistema
+import FreeSimpleGUI as sg
 
 
 class ControladorSistema:
@@ -40,8 +41,13 @@ class ControladorSistema:
     @property
     def controlador_relatorio(self):
         return self.__controlador_relatorio
+    
+    @property
+    def controlador_admin(self):
+        return self.__controlador_admin
 
     def inicializa(self):
+        sg.theme('Reddit')
         self.abre_tela()
 
     def abre_tela_companhia(self):
